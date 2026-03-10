@@ -4,27 +4,24 @@ import { COLORS } from '../theme/theme';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
-const Layout = ({ children, onNavigate }) => {
+const Layout = ({ children, onNavigate, currentView }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div style={styles.container}>
-      {/* 1. Le Header s'occupe juste d'ouvrir le menu */}
       <Header openSidebar={() => setIsSidebarOpen(true)} />
 
-      {/* 2. Le Sidebar reçoit onNavigate pour pouvoir changer les pages */}
       <Sidebar 
         isOpen={isSidebarOpen} 
         closeSidebar={() => setIsSidebarOpen(false)} 
         onNavigate={onNavigate}
+        currentView={currentView} // On transmet la vue active au menu
       />
 
-      {/* 3. LA CORRECTION EST ICI : On affiche {children} (le contenu de LandingPage) au lieu du texte en dur */}
       <main style={styles.mainContent}>
         {children}
       </main>
 
-      {/* 4. Un footer minimaliste Bank Grade */}
       <footer style={styles.footer}>
         <p style={styles.footerText}>© {new Date().getFullYear()} Yely. Tous droits réservés.</p>
       </footer>
@@ -40,7 +37,7 @@ const styles = {
     flexDirection: 'column',
   },
   mainContent: {
-    flex: 1, // Prend tout l'espace disponible entre le header et le footer
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',

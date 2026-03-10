@@ -21,7 +21,7 @@ const LandingPage = () => {
   const [currentView, setCurrentView] = useState(VIEWS.HOME);
   const { showToast } = useToast();
 
-  // LOGIQUE DE TELECHARGEMENT ANDROID
+  // LOGIQUE DE TÉLÉCHARGEMENT ANDROID
   const handleAndroidDownload = async () => {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/android`);
@@ -69,8 +69,8 @@ const LandingPage = () => {
   };
 
   return (
-    // On passe setCurrentView au Layout (qui le passera au Header et au Sidebar)
-    <Layout onNavigate={setCurrentView}>
+    // LA CORRECTION EST ICI : On passe currentView={currentView} au Layout
+    <Layout onNavigate={setCurrentView} currentView={currentView}>
       
       {/* AnimatePresence permet d'animer la sortie d'un composant avant l'entrée du nouveau */}
       <AnimatePresence mode="wait">
