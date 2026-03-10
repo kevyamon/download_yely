@@ -1,53 +1,52 @@
-// src/components/ContactsView.jsx
+// src/components/FoundersView.jsx
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { COLORS, FONTS, SPACING } from '../theme/theme';
-import ContactCard from './ContactCard';
+import FounderCard from './FounderCard';
 
-const ContactsView = ({ onBack }) => {
-  const [contacts, setContacts] = useState([]);
+const FoundersView = ({ onBack }) => {
+  const [founders, setFounders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const socket = useSocket();
 
-  const fetchContacts = async () => {
+  const fetchFounders = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/contacts`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/founders`);
       const dataList = res.data?.data || res.data;
-      setContacts(Array.isArray(dataList) ? dataList : []);
+      setFounders(Array.isArray(dataList) ? dataList : []);
     } catch (err) {
-      console.error("Erreur récupération contacts:", err);
+      console.error("Erreur récupération fondateurs:", err);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchContacts();
+    fetchFounders();
   }, []);
 
   // MISE A JOUR TEMPS REEL (SOCKET)
   useEffect(() => {
     if (!socket) return;
-    socket.on('contacts_updated', fetchContacts);
-    return () => socket.off('contacts_updated');
+    socket.on('founders_updated', fetchFounders);
+    return () => socket.off('founders_updated');
   }, [socket]);
 
-  // Animation de conteneur en cascade (Stagger)
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: { staggerChildren: 0.15 }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 20 } }
   };
 
   return (
@@ -65,29 +64,29 @@ const ContactsView = ({ onBack }) => {
           animate={{ opacity: 1, y: 0 }}
           style={styles.titleSection}
         >
-          <h2 style={styles.title}>Assistance 24/7</h2>
-          <p style={styles.subtitle}>Notre equipe est a votre disposition sur les plateformes suivantes.</p>
+          <h2 style={styles.title}>L'Équipe Yely</h2>
+          <p style={styles.subtitle}>Découvrez les visionnaires derrière la révolution du transport.</p>
         </motion.div>
 
         {isLoading ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Connexion securisee en cours...</p>
+            <p style={{ color: COLORS.textSecondary }}>Chargement des profils...</p>
           </div>
-        ) : contacts.length === 0 ? (
+        ) : founders.length === 0 ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Aucun canal de contact disponible pour le moment.</p>
+            <p style={{ color: COLORS.textSecondary }}>Les profils seront dévoilés très prochainement.</p>
           </div>
         ) : (
           <motion.div 
-            style={styles.list}
+            style={styles.grid}
             variants={containerVariants}
             initial="hidden"
             animate="show"
           >
-            {contacts.map((c) => (
-              <ContactCard 
-                key={c._id || c.id} 
-                contact={c} 
+            {founders.map((founder) => (
+              <FounderCard 
+                key={founder._id || founder.id} 
+                founder={founder} 
                 variants={itemVariants} 
               />
             ))}
@@ -109,7 +108,7 @@ const styles = {
   },
   header: {
     width: '100%',
-    maxWidth: '500px',
+    maxWidth: '900px',
     display: 'flex',
     alignItems: 'center',
     marginBottom: SPACING.xl,
@@ -127,13 +126,14 @@ const styles = {
   },
   content: {
     width: '100%',
-    maxWidth: '500px',
+    maxWidth: '900px',
   },
   titleSection: {
     marginBottom: SPACING.xxl,
+    textAlign: 'center',
   },
   title: {
-    fontSize: FONTS.sizes.h1,
+    fontSize: FONTS.sizes.hero,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
@@ -145,14 +145,15 @@ const styles = {
   loadingState: {
     display: 'flex',
     justifyContent: 'center',
-    padding: `${SPACING.xxl}px 0`,
+    padding: `${SPACING.giant}px 0`,
     textAlign: 'center',
   },
-  list: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: SPACING.md,
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: SPACING.xl,
+    paddingBottom: SPACING.giant,
   }
 };
 
-export default ContactsView;
+export default FoundersView;

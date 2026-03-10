@@ -3,15 +3,16 @@ import { Menu } from 'lucide-react';
 import React from 'react';
 import { COLORS, FONTS } from '../theme/theme';
 
-const Header = ({ toggleSidebar }) => {
+const Header = ({ openSidebar }) => {
   return (
     <header style={styles.header}>
       <div style={styles.logoContainer}>
-        <span style={styles.logoY}>Y</span>
-        <span style={styles.logoText}>ely</span>
+        {/* Le texte Yely stylisé en or */}
+        <span style={styles.logoText}>Yely</span>
       </div>
       
-      <button onClick={toggleSidebar} style={styles.hamburgerButton}>
+      {/* Le bouton Hamburger qui déclenche openSidebar */}
+      <button onClick={openSidebar} style={styles.menuButton}>
         <Menu size={28} color={COLORS.textPrimary} />
       </button>
     </header>
@@ -20,31 +21,26 @@ const Header = ({ toggleSidebar }) => {
 
 const styles = {
   header: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '70px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    height: '80px',
     padding: '0 24px',
-    backgroundColor: COLORS.background,
-    zIndex: 40,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'transparent',
+    position: 'relative',
+    zIndex: 10,
   },
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
-    fontSize: FONTS.sizes.h1,
-    fontWeight: FONTS.weights.bold,
-  },
-  logoY: {
-    color: COLORS.primary,
   },
   logoText: {
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
+    fontSize: FONTS.sizes.h2,
+    fontWeight: FONTS.weights.bold,
+    letterSpacing: '1px',
   },
-  hamburgerButton: {
+  menuButton: {
     background: 'none',
     border: 'none',
     cursor: 'pointer',

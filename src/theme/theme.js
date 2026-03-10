@@ -1,36 +1,34 @@
 // src/theme/theme.js
 // LE COEUR DE L'IDENTITÉ VISUELLE - YÉLY REBRANDING (OR / BLANC / NOIR)
-// Ce fichier gère dynamiquement le mode SOMBRE et le mode CLAIR.
+// Version WEB (Traduite et optimisée depuis React Native)
 
-import { Appearance, Dimensions, Platform } from 'react-native';
-import { MD3DarkTheme, MD3LightTheme } from 'react-native-paper';
+// ═══════════════════════════════════════════════════════════════
+// DÉTECTION DU MODE SYSTÈME ET DIMENSIONS SÉCURISÉES POUR LE WEB
+// ═══════════════════════════════════════════════════════════════
+const isBrowser = typeof window !== 'undefined';
+const SCREEN_WIDTH = isBrowser ? window.innerWidth : 1200;
+const SCREEN_HEIGHT = isBrowser ? window.innerHeight : 800;
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-// DÉTECTION DU MODE SYSTÈME (Dark vs Light)
-const colorScheme = Appearance.getColorScheme();
-const isDark = colorScheme === 'dark';
+const isDark = isBrowser 
+  ? window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches 
+  : false; // Par défaut clair si non détecté
 
 // ═══════════════════════════════════════════════════════════════
 // 1. PALETTE PRIMITIVE (Les ingrédients bruts)
 // ═══════════════════════════════════════════════════════════════
 const PALETTE = {
-  // L'OR YÉLY (Identité de Marque)
   gold: '#D4AF37',       // Vrai Or Classique
   goldLight: '#F3E5AB',  // Or Pâle (Champagne)
   goldDark: '#AA8C2C',   // Or Vieilli (Ombres)
   
-  // LE BLANC (Mode Jour)
   pureWhite: '#FFFFFF',
   offWhite: '#F8F9FA',   // Blanc cassé (Anti-éblouissement)
   softGray: '#E9ECEF',   // Gris très léger pour les séparateurs
 
-  // LE NOIR (Mode Nuit)
   pureBlack: '#000000',
   richBlack: '#0A0A0A',  // Noir Premium (Pas gris, juste profond)
   charcoal: '#121212',   // Surface sombre standard
 
-  // FONCTIONNEL
   success: '#27AE60',    // Vert Émeraude (Plus classe que le vert néon)
   danger: '#C0392B',     // Rouge Rubis (Plus profond)
   warning: '#F39C12',
@@ -41,48 +39,37 @@ const PALETTE = {
 // 2. COULEURS SÉMANTIQUES (L'adaptation Jour/Nuit)
 // ═══════════════════════════════════════════════════════════════
 const COLORS = {
-  // --- FONDAMENTAUX ---
-  // Le fond principal change radicalement selon le mode
   background: isDark ? PALETTE.pureBlack : PALETTE.offWhite,
   
-  // Couleur principale (L'OR reste constant mais s'ajuste légèrement)
   primary: PALETTE.gold,
   primaryLight: PALETTE.goldLight,
   primaryDark: PALETTE.goldDark,
 
-  // Couleur secondaire (Contraste absolu)
   secondary: isDark ? PALETTE.pureWhite : PALETTE.pureBlack,
 
-  // --- TYPOGRAPHIE ---
-  // En mode Jour, on écrit en Noir. En mode Nuit, en Blanc.
   textPrimary: isDark ? '#F8F9FA' : '#1A1A1A',
   textSecondary: isDark ? 'rgba(248, 249, 250, 0.70)' : 'rgba(26, 26, 26, 0.70)', 
   textTertiary: isDark ? 'rgba(248, 249, 250, 0.45)' : 'rgba(26, 26, 26, 0.45)',
-  textInverse: isDark ? '#1A1A1A' : '#FFFFFF', // Pour le texte sur bouton Or
+  textInverse: isDark ? '#1A1A1A' : '#FFFFFF', 
 
-  // --- GLASSMORPHISM & SURFACES ---
-  // Glass: Blanc givré le jour / Fumé sombre la nuit
   glassSurface: isDark ? 'rgba(18, 18, 18, 0.85)' : 'rgba(255, 255, 255, 0.85)',
   glassModal: isDark ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)',
   
-  // Bordures : Subtiles et adaptées
-  border: isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(0, 0, 0, 0.75)',
+  border: isDark ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.15)',
   borderActive: PALETTE.gold,
 
-  // Fonctionnel
   success: PALETTE.success,
   danger: PALETTE.danger,
   warning: PALETTE.warning,
   info: PALETTE.info,
   
-  // Utilitaires
   transparent: 'transparent',
   overlay: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-  shadow: isDark ? '#000000' : '#888888', // Ombres grises le jour pour le réalisme
+  shadow: isDark ? '#000000' : '#888888', 
 };
 
-// COMPATIBILITÉ RÉTROACTIVE (Pour ne pas casser les vieux imports)
-COLORS.deepAsphalt = COLORS.background; // Redirige vers le nouveau fond
+// COMPATIBILITÉ RÉTROACTIVE
+COLORS.deepAsphalt = COLORS.background; 
 COLORS.champagneGold = COLORS.primary;
 COLORS.moonlightWhite = COLORS.textPrimary;
 COLORS.glassDark = COLORS.glassSurface;
@@ -96,15 +83,15 @@ COLORS.overlayDark = 'rgba(0, 0, 0, 0.60)';
 COLORS.overlayMedium = 'rgba(0, 0, 0, 0.40)';
 
 // ═══════════════════════════════════════════════════════════════
-// 3. TYPOGRAPHIE
+// 3. TYPOGRAPHIE (Adaptée aux polices système Web)
 // ═══════════════════════════════════════════════════════════════
 const FONTS = {
   family: {
-    bold: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    semiBold: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    medium: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    regular: Platform.OS === 'ios' ? 'System' : 'Roboto',
-    light: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    bold: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    semiBold: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    medium: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    regular: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    light: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   },
   sizes: {
     hero: 34, h1: 28, h2: 24, h3: 20, h4: 18,
@@ -127,72 +114,47 @@ const SPACING = {
 
 const BORDERS = {
   radius: {
-    xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24, pill: 9999, circle: 9999,
+    xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24, pill: 9999, circle: '50%',
   },
   width: {
-    thin: 0.5, normal: 1, medium: 1.5, thick: 2,
+    thin: 1, normal: 1, medium: 2, thick: 3,
   },
 };
 
 // ═══════════════════════════════════════════════════════════════
-// 5. OMBRES (Adaptées Jour/Nuit)
+// 5. OMBRES (Traduites en CSS boxShadow)
 // ═══════════════════════════════════════════════════════════════
 const SHADOWS = {
-  none: { shadowColor: 'transparent', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0, shadowRadius: 0, elevation: 0 },
+  none: { boxShadow: 'none' },
   soft: {
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: isDark ? 0.3 : 0.08,
-    shadowRadius: 4,
-    elevation: 3,
+    boxShadow: isDark 
+      ? '0px 2px 4px rgba(0, 0, 0, 0.3)' 
+      : '0px 2px 4px rgba(136, 136, 136, 0.08)'
   },
   medium: {
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: isDark ? 0.4 : 0.12,
-    shadowRadius: 8,
-    elevation: 6,
+    boxShadow: isDark 
+      ? '0px 4px 8px rgba(0, 0, 0, 0.4)' 
+      : '0px 4px 8px rgba(136, 136, 136, 0.12)'
   },
   strong: {
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: isDark ? 0.45 : 0.20,
-    shadowRadius: 16,
-    elevation: 12,
+    boxShadow: isDark 
+      ? '0px 8px 16px rgba(0, 0, 0, 0.45)' 
+      : '0px 8px 16px rgba(136, 136, 136, 0.20)'
   },
   gold: {
-    shadowColor: PALETTE.gold,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.30,
-    shadowRadius: 12,
-    elevation: 8,
+    boxShadow: '0px 4px 12px rgba(212, 175, 55, 0.30)'
   },
   goldSoft: {
-    shadowColor: PALETTE.gold,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+    boxShadow: '0px 2px 8px rgba(212, 175, 55, 0.15)'
   },
 };
 
 // ═══════════════════════════════════════════════════════════════
-// 6. ANIMATIONS ET ICÔNES (RÉTABLIS EN CONSTANTES STRICTES)
+// 6. ANIMATIONS ET ICÔNES
 // ═══════════════════════════════════════════════════════════════
 const ANIMATIONS = {
   duration: { instant: 100, fast: 200, normal: 300, slow: 450, verySlow: 600, dramatic: 800 },
-  spring: {
-    gentle: { damping: 20, stiffness: 150, mass: 1 },
-    bouncy: { damping: 12, stiffness: 180, mass: 0.8 },
-    snappy: { damping: 25, stiffness: 300, mass: 0.8 },
-    smooth: { damping: 30, stiffness: 200, mass: 1 },
-  },
-  easing: {
-    easeOut: 'cubic-bezier(0.16, 1, 0.3, 1)',
-    easeIn: 'cubic-bezier(0.65, 0, 0.35, 1)',
-    easeInOut: 'cubic-bezier(0.65, 0, 0.35, 1)',
-    spring: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-  },
+  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)', // Transition standard Web
 };
 
 const ICONS = {
@@ -205,31 +167,41 @@ const ICONS = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// 7. STYLES GLASSMORPHISM (ADAPTATIF)
+// 7. STYLES GLASSMORPHISM (ADAPTATIF WEB AVEC BACKDROP-FILTER)
 // ═══════════════════════════════════════════════════════════════
 const GLASS = {
   card: {
     backgroundColor: COLORS.glassSurface,
     borderRadius: BORDERS.radius.xl,
     borderWidth: BORDERS.width.thin,
+    borderStyle: 'solid',
     borderColor: COLORS.border,
     overflow: 'hidden',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)', // Safari support
   },
   surface: {
     backgroundColor: COLORS.glassSurface,
     borderWidth: BORDERS.width.thin,
+    borderStyle: 'solid',
     borderColor: COLORS.border,
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
   },
   subtle: {
     backgroundColor: COLORS.glassSurface,
     borderRadius: BORDERS.radius.lg,
     borderWidth: BORDERS.width.thin,
+    borderStyle: 'solid',
     borderColor: COLORS.border,
+    backdropFilter: 'blur(6px)',
+    WebkitBackdropFilter: 'blur(6px)',
   },
   goldHighlight: {
     backgroundColor: 'rgba(212, 175, 55, 0.08)',
     borderRadius: BORDERS.radius.xl,
     borderWidth: BORDERS.width.thin,
+    borderStyle: 'solid',
     borderColor: COLORS.borderActive,
   },
 };
@@ -240,18 +212,10 @@ const GLASS = {
 const DIMENSIONS = {
   screen: { width: SCREEN_WIDTH, height: SCREEN_HEIGHT },
   sidebar: { width: SCREEN_WIDTH * 0.78, maxWidth: 320 },
-  header: {
-    height: Platform.OS === 'ios' ? 96 : 72,
-    paddingTop: Platform.OS === 'ios' ? 48 : 24,
-  },
-  drawer: {
-    collapsed: SCREEN_HEIGHT * 0.28,
-    expanded: SCREEN_HEIGHT * 0.55,
-    full: SCREEN_HEIGHT * 0.85,
-  },
+  header: { height: 72, paddingTop: 24 },
   button: { height: 52, heightSmall: 40, heightLarge: 58 },
   input: { height: 52 },
-  forfaitCard: { width: SCREEN_WIDTH * 0.72, height: 160 },
+  forfaitCard: { width: 280, height: 160 }, // Valeurs fixes préférables sur le web
   badge: { size: 20, sizeLarge: 28 },
 };
 
@@ -265,20 +229,23 @@ const LAYOUT = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// 9. STYLES DE COMPOSANTS UNIFIÉS
+// 9. STYLES DE COMPOSANTS UNIFIÉS (Adaptés React DOM)
 // ═══════════════════════════════════════════════════════════════
 const COMPONENT_STYLES = {
   buttonPrimary: {
     backgroundColor: COLORS.primary,
     borderRadius: BORDERS.radius.pill,
     height: DIMENSIONS.button.height,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: SPACING.xxl,
+    padding: `0 ${SPACING.xxl}px`,
     ...SHADOWS.gold,
+    cursor: 'pointer',
+    border: 'none',
   },
   buttonPrimaryText: {
-    color: COLORS.textInverse, // Contraste géré (Noir sur or)
+    color: COLORS.textInverse,
     fontSize: FONTS.sizes.body,
     fontWeight: FONTS.weights.bold,
   },
@@ -286,11 +253,14 @@ const COMPONENT_STYLES = {
     backgroundColor: 'transparent',
     borderRadius: BORDERS.radius.pill,
     height: DIMENSIONS.button.height,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: SPACING.xxl,
+    padding: `0 ${SPACING.xxl}px`,
     borderWidth: 1.5,
+    borderStyle: 'solid',
     borderColor: COLORS.textPrimary,
+    cursor: 'pointer',
   },
   buttonSecondaryText: {
     color: COLORS.textPrimary,
@@ -301,9 +271,12 @@ const COMPONENT_STYLES = {
     backgroundColor: COLORS.danger,
     borderRadius: BORDERS.radius.pill,
     height: DIMENSIONS.button.height,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: SPACING.xxl,
+    padding: `0 ${SPACING.xxl}px`,
+    cursor: 'pointer',
+    border: 'none',
   },
   buttonDangerText: {
     color: '#FFFFFF',
@@ -315,60 +288,45 @@ const COMPONENT_STYLES = {
     backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)',
     borderRadius: BORDERS.radius.lg,
     borderWidth: BORDERS.width.thin,
+    borderStyle: 'solid',
     borderColor: COLORS.border,
-    paddingHorizontal: SPACING.lg,
+    padding: `0 ${SPACING.lg}px`,
     color: COLORS.textPrimary,
     fontSize: FONTS.sizes.body,
-  },
-  inputFieldFocused: {
-    borderColor: COLORS.primary,
-    borderWidth: BORDERS.width.medium,
+    outline: 'none',
   },
   sectionContainer: {
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.lg,
+    padding: `${SPACING.lg}px ${SPACING.xl}px`,
   },
   divider: {
     height: 1,
     backgroundColor: COLORS.border,
-    marginVertical: SPACING.md,
+    margin: `${SPACING.md}px 0`,
   },
   pageContainer: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  safeArea: {
-    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
     backgroundColor: COLORS.background,
   },
 };
 
 // ═══════════════════════════════════════════════════════════════
-// 10. THÈME REACT NATIVE PAPER (MD3)
+// 10. THÈME PAPER (Désactivé pour le web pur, renvoie un objet vide pour compatibilité)
 // ═══════════════════════════════════════════════════════════════
-const BasePaperTheme = isDark ? MD3DarkTheme : MD3LightTheme;
-
 const YelyTheme = {
-  ...BasePaperTheme,
   colors: {
-    ...BasePaperTheme.colors,
     primary: COLORS.primary,
-    onPrimary: COLORS.textInverse,
     background: COLORS.background,
     surface: COLORS.glassSurface,
-    onSurface: COLORS.textPrimary,
     error: COLORS.danger,
-    champagneGold: COLORS.primary,
     textSecondary: COLORS.textSecondary,
-    textTertiary: COLORS.textTertiary,
     success: COLORS.success,
-    warning: COLORS.warning,
-    info: COLORS.info,
   },
 };
 
 // ═══════════════════════════════════════════════════════════════
-// EXPORT UNIFIÉ & SÉCURISÉ (Rétrocompatibilité Totale)
+// EXPORT UNIFIÉ & SÉCURISÉ
 // ═══════════════════════════════════════════════════════════════
 const THEME = {
   COLORS,
@@ -384,8 +342,6 @@ const THEME = {
   ICONS,
 };
 
-// Il est crucial d'exporter séparément chaque constante pour que 
-// `import { ANIMATIONS } from 'theme'` fonctionne sans casser.
 export {
   ANIMATIONS,
   BORDERS,

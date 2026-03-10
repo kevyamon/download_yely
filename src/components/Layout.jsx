@@ -1,55 +1,59 @@
 // src/components/Layout.jsx
 import React, { useState } from 'react';
 import { COLORS } from '../theme/theme';
-import Header from './Header.jsx';
-import Sidebar from './Sidebar.jsx';
+import Header from './Header';
+import Sidebar from './Sidebar';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, onNavigate }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const closeSidebar = () => setIsSidebarOpen(false);
-
   return (
-    <div style={styles.wrapper}>
-      <Header toggleSidebar={toggleSidebar} />
-      
-      <Sidebar isOpen={isSidebarOpen} closeSidebar={closeSidebar} />
+    <div style={styles.container}>
+      {/* 1. Le Header s'occupe juste d'ouvrir le menu */}
+      <Header openSidebar={() => setIsSidebarOpen(true)} />
 
-      {isSidebarOpen && (
-        <div style={styles.overlay} onClick={closeSidebar} />
-      )}
+      {/* 2. Le Sidebar reçoit onNavigate pour pouvoir changer les pages */}
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        closeSidebar={() => setIsSidebarOpen(false)} 
+        onNavigate={onNavigate}
+      />
 
-      <main style={{
-        ...styles.mainContent,
-        filter: isSidebarOpen ? 'blur(8px)' : 'none',
-        transition: 'filter 0.3s ease-in-out',
-      }}>
+      {/* 3. LA CORRECTION EST ICI : On affiche {children} (le contenu de LandingPage) au lieu du texte en dur */}
+      <main style={styles.mainContent}>
         {children}
       </main>
+
+      {/* 4. Un footer minimaliste Bank Grade */}
+      <footer style={styles.footer}>
+        <p style={styles.footerText}>© {new Date().getFullYear()} Yely. Tous droits réservés.</p>
+      </footer>
     </div>
   );
 };
 
 const styles = {
-  wrapper: {
+  container: {
     minHeight: '100vh',
     backgroundColor: COLORS.background,
-    position: 'relative',
-    overflowX: 'hidden',
-  },
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    zIndex: 45,
+    display: 'flex',
+    flexDirection: 'column',
   },
   mainContent: {
-    paddingTop: '70px',
-    minHeight: 'calc(100vh - 70px)',
+    flex: 1, // Prend tout l'espace disponible entre le header et le footer
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    zIndex: 1,
+  },
+  footer: {
+    padding: '24px',
+    textAlign: 'center',
+    borderTop: `1px solid ${COLORS.border}`,
+  },
+  footerText: {
+    color: COLORS.textTertiary,
+    fontSize: '12px',
   }
 };
 

@@ -1,14 +1,18 @@
 // src/pages/LandingPage.jsx
-import React, { useState } from 'react';
 import axios from 'axios';
-import Layout from '../components/Layout';
-import Hero from '../components/Hero';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
 import ContactsView from '../components/ContactsView';
+import FoundersView from '../components/FoundersView';
+import Hero from '../components/Hero';
+import Layout from '../components/Layout';
+import VideosView from '../components/VideosView';
 
+// Constantes pour la navigation
 const VIEWS = {
   HOME: 'HOME',
   CONTACTS: 'CONTACTS',
-  ABOUT: 'ABOUT',
+  VIDEOS: 'VIDEOS',
   FOUNDERS: 'FOUNDERS'
 };
 
@@ -18,12 +22,14 @@ const LandingPage = () => {
   // LOGIQUE DE TELECHARGEMENT ANDROID
   const handleAndroidDownload = async () => {
     try {
-      // 1. On previent le backend pour le compteur
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/android`);
       
-      // 2. On lance le telechargement de l'APK 
-      // Remplace par ton lien reel plus tard
-      window.location.href = "https://ton-stockage-cloud.com/yely.apk"; 
+      const apkUrl = import.meta.env.VITE_APK_URL;
+      if (apkUrl && apkUrl.startsWith('http')) {
+        window.location.href = apkUrl;
+      } else {
+        alert("La mise à jour des serveurs est en cours. Le lien sera disponible dans quelques minutes !");
+      }
     } catch (err) {
       console.error("Erreur download:", err);
     }
@@ -33,27 +39,94 @@ const LandingPage = () => {
   const handleIosInstall = async () => {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/ios`);
-      // Ici on ouvrira ton tuto PWA a la Vague 3
-      alert("Le tutoriel d'installation iPhone arrive bientot !");
+      
+      const pwaUrl = import.meta.env.VITE_PWA_URL;
+      if (pwaUrl && pwaUrl.startsWith('http')) {
+        window.location.href = pwaUrl;
+      } else {
+        alert("Le tutoriel d'installation iPhone arrive bientot !");
+      }
     } catch (err) {
       console.error("Erreur click iOS:", err);
     }
   };
 
+  // Variants pour l'animation de transition entre les pages
+  const pageVariants = {
+    initial: { opacity: 0, x: 20 },
+    in: { opacity: 1, x: 0 },
+    out: { opacity: 0, x: -20 }
+  };
+
+  const pageTransition = {
+    type: 'tween',
+    ease: 'anticipate',
+    duration: 0.3
+  };
+
   return (
-    <Layout onNavigate={(view) => setCurrentView(view)}>
-      {currentView === VIEWS.HOME && (
-        <Hero 
-          onAndroidClick={handleAndroidDownload} 
-          onIosClick={handleIosInstall} 
-        />
-      )}
+    // On passe setCurrentView au Layout (qui le passera au Header et au Sidebar)
+    <Layout onNavigate={setCurrentView}>
+      
+      {/* AnimatePresence permet d'animer la sortie d'un composant avant l'entrée du nouveau */}
+      <AnimatePresence mode="wait">
+        
+        {currentView === VIEWS.HOME && (
+          <motion.div
+            key="home"
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={pageVariants}
+            transition={pageTransition}
+          >
+            <Hero 
+              onAndroidClick={handleAndroidDownload} 
+              onIosClick={handleIosInstall} 
+            />
+          </motion.div>
+        )}
 
-      {currentView === VIEWS.CONTACTS && (
-        <ContactsView onBack={() => setCurrentView(VIEWS.HOME)} />
-      )}
+        {currentView === VIEWS.CONTACTS && (
+          <motion.div
+            key="contacts"
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={pageVariants}
+            transition={pageTransition}
+          >
+            <ContactsView onBack={() => setCurrentView(VIEWS.HOME)} />
+          </motion.div>
+        )}
 
-      {/* Les autres vues (About, Founders) seront ajoutees ensuite */}
+        {currentView === VIEWS.FOUNDERS && (
+          <motion.div
+            key="founders"
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={pageVariants}
+            transition={pageTransition}
+          >
+            <FoundersView onBack={() => setCurrentView(VIEWS.HOME)} />
+          </motion.div>
+        )}
+
+        {currentView === VIEWS.VIDEOS && (
+          <motion.div
+            key="videos"
+            initial="initial"
+            animate="in"
+            exit="out"
+            variants={pageVariants}
+            transition={pageTransition}
+          >
+            <VideosView onBack={() => setCurrentView(VIEWS.HOME)} />
+          </motion.div>
+        )}
+
+      </AnimatePresence>
     </Layout>
   );
 };
