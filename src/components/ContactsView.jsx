@@ -66,12 +66,12 @@ const ContactsView = ({ onBack }) => {
           style={styles.titleSection}
         >
           <h2 style={styles.title}>Assistance 24/7</h2>
-          <p style={styles.subtitle}>Notre equipe est a votre disposition sur les plateformes suivantes.</p>
+          <p style={styles.subtitle}>Notre équipe est à votre disposition sur les plateformes suivantes.</p>
         </motion.div>
 
         {isLoading ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Connexion securisee en cours...</p>
+            <p style={{ color: COLORS.textSecondary }}>Connexion sécurisée en cours...</p>
           </div>
         ) : contacts.length === 0 ? (
           <div style={styles.loadingState}>
