@@ -155,7 +155,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               whileTap={{ scale: 0.95 }}
             >
               <div style={styles.btnContent}>
-                <div style={styles.btnIconWrapper}><AndroidIcon size={26} /></div>
+                <div style={styles.btnIconWrapper}><AndroidIcon size={24} /></div>
                 <div style={styles.btnTextWrapper}>
                   <span style={styles.btnTitle}>Télécharger</span>
                   <span style={styles.btnSub}>pour Android</span>
@@ -175,7 +175,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               whileTap={{ scale: 0.95 }}
             >
               <div style={styles.btnContent}>
-                <div style={styles.btnIconWrapper}><Apple size={26} color={COLORS.textPrimary} /></div>
+                <div style={styles.btnIconWrapper}><Apple size={24} color={COLORS.textPrimary} /></div>
                 <div style={styles.btnTextWrapper}>
                   <span style={styles.btnTitle}>Installer la PWA</span>
                   <span style={{...styles.btnSub, color: COLORS.textSecondary}}>pour iPhone</span>
@@ -240,47 +240,52 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   );
 };
 
-// COMPACTAGE DES STYLES POUR LE SANS-SCROLL
+// COMPACTAGE DES STYLES POUR LE SANS-SCROLL ET LE RECENTRAGE HAUT
 const styles = {
   container: { 
     display: 'flex', 
     flexDirection: 'column', 
     alignItems: 'center', 
-    justifyContent: 'center', 
-    padding: '15px 20px', 
+    justifyContent: 'flex-start', // Remonte le contenu vers le haut
+    paddingTop: '8vh', // Ajuste l'espace au-dessus
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    paddingBottom: '10px',
     textAlign: 'center',
-    minHeight: '85dvh', // Laisse de l'espace pour le header/copyright
+    minHeight: '75dvh', // Réduit pour laisser la place au copyright d'apparaître sans scroll
     boxSizing: 'border-box'
   },
   logoWrapper: { 
-    marginBottom: '15px', 
+    marginBottom: '10px', // Marge réduite
     borderRadius: '50%', 
     overflow: 'hidden', 
-    width: '100px', 
-    height: '100px', 
+    width: '90px', // Légèrement réduit
+    height: '90px', 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center', 
-    backgroundColor: COLORS.richBlack, 
-    boxShadow: `0 0 40px ${COLORS.primary}44` 
+    backgroundColor: COLORS.richBlack,
+    border: `3px solid ${COLORS.primary}`,
+    boxShadow: `0 0 40px ${COLORS.primary}66`
   },
   logoImage: { width: '100%', height: '100%', objectFit: 'cover' },
   logoCircle: { width: '100%', height: '100%', borderRadius: '50%', backgroundColor: COLORS.background, border: `4px solid ${COLORS.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center' },
   logoY: { fontSize: '40px', fontWeight: '900', color: COLORS.primary },
-  title: { fontSize: FONTS.sizes.h1, color: COLORS.textPrimary, marginBottom: '5px', fontWeight: '800' },
-  subtitle: { fontSize: FONTS.sizes.body, color: COLORS.textSecondary, marginBottom: '25px' },
-  buttonContainer: { display: 'flex', flexDirection: 'column', gap: '15px', width: '100%', maxWidth: '340px' },
-  btnWrapper: { display: 'flex', flexDirection: 'column', gap: '4px', position: 'relative' },
+  title: { fontSize: FONTS.sizes.h1, color: COLORS.textPrimary, marginBottom: '2px', fontWeight: '800' }, // Marge réduite
+  subtitle: { fontSize: FONTS.sizes.body, color: COLORS.textSecondary, marginBottom: '15px' }, // Marge réduite
+  buttonContainer: { display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '380px' }, // Plus large (380px au lieu de 340px)
+  btnWrapper: { display: 'flex', flexDirection: 'column', gap: '2px', position: 'relative' },
   
   downloadBtn: {
-    ...GLASS.card, position: 'relative', height: '60px', display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', background: COLORS.glassSurface
+    ...GLASS.card, position: 'relative', height: '50px', // Moins long (50px au lieu de 60px)
+    display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', background: COLORS.glassSurface
   },
   btnContent: { display: 'flex', alignItems: 'center', width: '100%', padding: '0 15px', zIndex: 2, position: 'relative' },
   btnIconWrapper: { width: '40px', display: 'flex', justifyContent: 'center', color: COLORS.primary },
   btnTextWrapper: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderLeft: `1px solid ${COLORS.border}`, paddingLeft: '12px', marginLeft: '5px' },
   btnTitle: { color: COLORS.textPrimary, fontSize: FONTS.sizes.h4, fontWeight: 'bold' },
   btnSub: { color: COLORS.primary, fontSize: FONTS.sizes.caption },
-  counter: { fontSize: '11px', color: COLORS.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' },
+  counter: { fontSize: '11px', color: COLORS.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px' },
   
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: SPACING.md },
   modalContent: { ...GLASS.modal, width: '100%', maxWidth: '380px', maxHeight: '90vh', overflowY: 'auto', borderRadius: BORDERS.radius.xl, padding: SPACING.lg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', border: `1px solid ${COLORS.border}`, boxShadow: `0 20px 40px rgba(0,0,0,0.5)` },
