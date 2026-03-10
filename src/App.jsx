@@ -1,30 +1,76 @@
 // src/App.jsx
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
-import { ToastProvider } from './context/ToastContext'; // <-- NOUVEAU
-import { COLORS } from './theme/theme';
+import { ToastProvider } from './context/ToastContext';
 
+// Pages Publiques
 import LandingPage from './pages/LandingPage';
 
-// Page Admin temporaire
-const AdminDashboard = () => (
-  <div style={{ color: COLORS.primary, padding: 50 }}>
-    Dashboard Admin en construction... (Pas de Layout public ici)
-  </div>
-);
+// Pages Admin
+import AdminLayout from './components/admin/AdminLayout';
+import AdminLogin from './pages/admin/AdminLogin';
+import DashboardHome from './pages/admin/DashboardHome';
+
+// 🛡️ GARDE DU CORPS DES ROUTES ADMIN
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  return children;
+};
+
+const AppRoutes = () => {
+  return (
+    <Routes>
+      {/* Côté Public */}
+      <Route path="/" element={<LandingPage />} />
+      
+      {/* Connexion Admin */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      
+      {/* Tableau de bord sécurisé (Sous-Routes) */}
+      <Route 
+        path="/admin/*" 
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <Routes>
+                {/* Redirection automatique de /admin vers /admin/dashboard */}
+                <Route path="/" element={<Navigate to="dashboard" replace />} />
+                
+                {/* La vraie page des statistiques */}
+                <Route path="dashboard" element={<DashboardHome />} />
+                
+                {/* Les autres vues (Contacts, Videos...) viendront s'ajouter ici ! */}
+                <Route path="contacts" element={<h2 style={{color: 'white'}}>Gestion des contacts à venir...</h2>} />
+                <Route path="founders" element={<h2 style={{color: 'white'}}>Gestion de l'équipe à venir...</h2>} />
+                <Route path="videos" element={<h2 style={{color: 'white'}}>Gestion des vidéos à venir...</h2>} />
+              </Routes>
+            </AdminLayout>
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* 🚨 SOLUTION ANTI ÉCRAN NOIR 🚨 */}
+      {/* Si l'utilisateur tape une adresse qui n'existe pas (ex: /dashboard au lieu de /admin/dashboard), on le renvoie à l'accueil */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
 
 const App = () => {
   return (
     <SocketProvider>
-      {/* On englobe l'application avec le ToastProvider */}
       <ToastProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/admin/*" element={<AdminDashboard />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
       </ToastProvider>
     </SocketProvider>
   );
