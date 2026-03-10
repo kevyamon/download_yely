@@ -14,6 +14,8 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminRegister from './pages/admin/AdminRegister'; // <-- IMPORT DE LA PAGE D'INITIALISATION
 import ContactsAdmin from './pages/admin/ContactsAdmin';
 import DashboardHome from './pages/admin/DashboardHome';
+import FoundersAdmin from './pages/admin/FoundersAdmin';
+import VideosAdmin from './pages/admin/VideosAdmin';
 
 // 🛡️ GARDE DU CORPS DES ROUTES ADMIN
 const ProtectedRoute = ({ children }) => {
@@ -52,8 +54,9 @@ const AppRoutes = () => {
                 <Route path="contacts" element={<ContactsAdmin />} />
                 
                 {/* Les autres vues (Founders, Videos...) viendront s'ajouter ici ! */}
-                <Route path="founders" element={<h2 style={{color: 'white'}}>Gestion de l'équipe à venir...</h2>} />
-                <Route path="videos" element={<h2 style={{color: 'white'}}>Gestion des vidéos à venir...</h2>} />
+
+                <Route path="founders" element={<FoundersAdmin />} />
+                <Route path="videos" element={<VideosAdmin />} />
               </Routes>
             </AdminLayout>
           </ProtectedRoute>
