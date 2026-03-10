@@ -1,7 +1,7 @@
 // src/pages/LandingPage.jsx
 import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ContactsView from '../components/ContactsView';
 import FoundersView from '../components/FoundersView';
 import Hero from '../components/Hero';
@@ -19,14 +19,33 @@ const VIEWS = {
 
 const LandingPage = () => {
   const [currentView, setCurrentView] = useState(VIEWS.HOME);
+  const [appConfig, setAppConfig] = useState({ apkUrl: '', pwaUrl: '' });
   const { showToast } = useToast();
 
-  // LOGIQUE DE TÉLÉCHARGEMENT ANDROID
+  // 1. RÉCUPÉRATION DES LIENS DYNAMIQUES DEPUIS LA BASE DE DONNÉES
+  useEffect(() => {
+    const fetchAppLinks = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/config`);
+        if (res.data) {
+          setAppConfig(res.data);
+        }
+      } catch (error) {
+        console.error("Impossible de charger la configuration système:", error);
+      }
+    };
+    fetchAppLinks();
+  }, []);
+
+  // 2. LOGIQUE DE TÉLÉCHARGEMENT ANDROID
   const handleAndroidDownload = async () => {
     try {
+      // On compte le clic en BDD pour tes stats
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/android`);
       
-      const apkUrl = import.meta.env.VITE_APK_URL;
+      // On utilise le lien dynamique ! Fini le .env !
+      const apkUrl = appConfig.apkUrl;
+      
       if (apkUrl && apkUrl.startsWith('http')) {
         window.location.href = apkUrl;
       } else {
@@ -38,12 +57,15 @@ const LandingPage = () => {
     }
   };
 
-  // LOGIQUE INSTALLATION IPHONE
+  // 3. LOGIQUE INSTALLATION IPHONE
   const handleIosInstall = async () => {
     try {
+      // On compte le clic iOS
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/ios`);
       
-      const pwaUrl = import.meta.env.VITE_PWA_URL;
+      // On utilise le lien PWA dynamique
+      const pwaUrl = appConfig.pwaUrl;
+      
       if (pwaUrl && pwaUrl.startsWith('http')) {
         window.location.href = pwaUrl;
       } else {
@@ -69,10 +91,8 @@ const LandingPage = () => {
   };
 
   return (
-    // LA CORRECTION EST ICI : On passe currentView={currentView} au Layout
     <Layout onNavigate={setCurrentView} currentView={currentView}>
       
-      {/* AnimatePresence permet d'animer la sortie d'un composant avant l'entrée du nouveau */}
       <AnimatePresence mode="wait">
         
         {currentView === VIEWS.HOME && (
