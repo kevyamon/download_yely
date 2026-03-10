@@ -10,22 +10,19 @@ const FoundersAdmin = () => {
   const [founders, setFounders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Gestion de la modale
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   
-  // Le formulaire pour un fondateur (adaptable selon ton backend)
   const [formData, setFormData] = useState({ 
     name: '', 
     role: '', 
     description: '',
-    imageUrl: '', // Lien vers la photo
+    imageUrl: '', 
     displayOrder: 0 
   });
 
   const { showToast } = useToast();
 
-  // 1. LIRE LES FONDATEURS
   const fetchFounders = async () => {
     try {
       setIsLoading(true);
@@ -44,7 +41,6 @@ const FoundersAdmin = () => {
     fetchFounders();
   }, []);
 
-  // 2. OUVRIR LA MODALE (Création ou Édition)
   const openModal = (founder = null) => {
     if (founder) {
       setEditingId(founder._id);
@@ -62,7 +58,6 @@ const FoundersAdmin = () => {
     setIsModalOpen(true);
   };
 
-  // 3. SAUVEGARDER
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -80,7 +75,6 @@ const FoundersAdmin = () => {
     }
   };
 
-  // 4. SUPPRIMER
   const handleDelete = async (id) => {
     if (!window.confirm("Êtes-vous sûr de vouloir retirer ce membre de l'équipe ?")) return;
     
@@ -93,9 +87,20 @@ const FoundersAdmin = () => {
     }
   };
 
+  // Composant Skeleton pour le chargement
+  const FounderSkeleton = () => (
+    <div style={{ ...styles.card, border: 'none' }}>
+      <div className="skeleton-shimmer" style={{ width: '100%', height: '160px' }} />
+      <div style={{ padding: '16px' }}>
+        <div className="skeleton-shimmer" style={{ width: '70%', height: '24px', marginBottom: '10px', borderRadius: '4px' }} />
+        <div className="skeleton-shimmer" style={{ width: '40%', height: '16px', marginBottom: '15px', borderRadius: '4px' }} />
+        <div className="skeleton-shimmer" style={{ width: '100%', height: '40px', borderRadius: '4px' }} />
+      </div>
+    </div>
+  );
+
   return (
     <div style={styles.container}>
-      {/* EN-TÊTE */}
       <div style={styles.header}>
         <div>
           <h2 style={styles.title}>L'Équipe Yely</h2>
@@ -112,9 +117,11 @@ const FoundersAdmin = () => {
         </motion.button>
       </div>
 
-      {/* LISTE DES FONDATEURS */}
+      {/* LISTE DES FONDATEURS AVEC SKELETONS */}
       {isLoading ? (
-        <p style={{ color: COLORS.textSecondary }}>Chargement des profils...</p>
+        <div style={styles.grid}>
+          {[1, 2, 3].map((n) => <FounderSkeleton key={n} />)}
+        </div>
       ) : founders.length === 0 ? (
         <div style={styles.emptyState}>L'équipe est vide. Cliquez sur "Nouveau Profil" pour présenter un fondateur.</div>
       ) : (
@@ -137,7 +144,6 @@ const FoundersAdmin = () => {
               <div style={styles.cardContent}>
                 <h3 style={styles.name}>{founder.name}</h3>
                 <p style={styles.role}>{founder.role}</p>
-                {/* On coupe la description si elle est trop longue pour la carte admin */}
                 <p style={styles.description}>
                   {founder.description?.length > 80 ? founder.description.substring(0, 80) + '...' : founder.description}
                 </p>
@@ -259,7 +265,7 @@ const styles = {
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: SPACING.xl },
   card: { 
     ...GLASS.card, display: 'flex', flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.02)',
-    overflow: 'hidden', padding: 0 // Padding 0 car on a une image en haut
+    overflow: 'hidden', padding: 0 
   },
   imageContainer: { width: '100%', height: '160px', backgroundColor: 'rgba(0,0,0,0.3)', position: 'relative' },
   profileImage: { width: '100%', height: '100%', objectFit: 'cover' },
@@ -272,7 +278,6 @@ const styles = {
   iconBtn: { background: 'rgba(212, 175, 55, 0.1)', border: 'none', borderRadius: BORDERS.radius.sm, padding: '8px', cursor: 'pointer', display: 'flex', transition: 'all 0.2s' },
   iconBtnDanger: { background: 'rgba(192, 57, 43, 0.1)', border: 'none', borderRadius: BORDERS.radius.sm, padding: '8px', cursor: 'pointer', display: 'flex', transition: 'all 0.2s' },
   
-  // Modale (Même style que ContactsAdmin pour la cohérence)
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, overflowY: 'auto', padding: SPACING.lg },
   modalContent: { ...GLASS.modal, width: '100%', maxWidth: '500px', padding: SPACING.xxl, borderRadius: BORDERS.radius.xl, position: 'relative', margin: 'auto' },
   closeBtn: { position: 'absolute', top: SPACING.lg, right: SPACING.lg, background: 'none', border: 'none', cursor: 'pointer' },

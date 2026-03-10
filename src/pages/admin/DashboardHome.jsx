@@ -8,14 +8,18 @@ import { BORDERS, COLORS, FONTS, GLASS, SHADOWS, SPACING } from '../../theme/the
 
 const DashboardHome = () => {
   const [stats, setStats] = useState({ androidClicks: 0, iosClicks: 0, visitorsCount: 0 });
+  const [isLoading, setIsLoading] = useState(true); // Ajout de l'état de chargement
   const socket = useSocket();
 
   const fetchStats = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.get(`${import.meta.env.VITE_API_URL}/stats`);
       setStats(res.data);
     } catch (err) {
       console.error("Erreur récupération stats:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -36,6 +40,19 @@ const DashboardHome = () => {
     { title: "Visiteurs (Optionnel)", value: stats.visitorsCount || 0, icon: Users, color: COLORS.info },
   ];
 
+  // Composant Skeleton pour les Stats
+  const StatSkeleton = () => (
+    <div style={{ ...styles.card, border: 'none' }}>
+      <div style={styles.cardHeader}>
+        <div className="skeleton-shimmer" style={{ width: '150px', height: '20px', borderRadius: '4px' }} />
+        <div className="skeleton-shimmer" style={{ width: '48px', height: '48px', borderRadius: BORDERS.radius.lg }} />
+      </div>
+      <div style={styles.valueContainer}>
+        <div className="skeleton-shimmer" style={{ width: '80px', height: '48px', borderRadius: '4px' }} />
+      </div>
+    </div>
+  );
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -47,27 +64,33 @@ const DashboardHome = () => {
         <p style={styles.subtitle}>Statistiques en temps réel de votre page d'acquisition.</p>
       </div>
 
-      <div style={styles.grid}>
-        {statCards.map((card, index) => (
-          <motion.div 
-            key={index}
-            style={styles.card}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1, type: 'spring' }}
-          >
-            <div style={styles.cardHeader}>
-              <h3 style={styles.cardTitle}>{card.title}</h3>
-              <div style={{...styles.iconWrapper, backgroundColor: `${card.color}22`}}>
-                <card.icon size={24} color={card.color} />
+      {isLoading ? (
+        <div style={styles.grid}>
+          {[1, 2, 3].map((n) => <StatSkeleton key={n} />)}
+        </div>
+      ) : (
+        <div style={styles.grid}>
+          {statCards.map((card, index) => (
+            <motion.div 
+              key={index}
+              style={styles.card}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.1, type: 'spring' }}
+            >
+              <div style={styles.cardHeader}>
+                <h3 style={styles.cardTitle}>{card.title}</h3>
+                <div style={{...styles.iconWrapper, backgroundColor: `${card.color}22`}}>
+                  <card.icon size={24} color={card.color} />
+                </div>
               </div>
-            </div>
-            <div style={styles.valueContainer}>
-              <span style={styles.value}>{card.value}</span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              <div style={styles.valueContainer}>
+                <span style={styles.value}>{card.value}</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -76,7 +99,11 @@ const styles = {
   header: { marginBottom: SPACING.xxl },
   title: { color: COLORS.textPrimary, fontSize: FONTS.sizes.h3, marginBottom: SPACING.xs },
   subtitle: { color: COLORS.textSecondary, fontSize: FONTS.sizes.body },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: SPACING.xl },
+  grid: { 
+    display: 'grid', 
+    gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', 
+    gap: SPACING.lg 
+  },
   card: {
     ...GLASS.card, padding: SPACING.xl, display: 'flex', flexDirection: 'column', backgroundColor: 'rgba(255,255,255,0.03)'
   },

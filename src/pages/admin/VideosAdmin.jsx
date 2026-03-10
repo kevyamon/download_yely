@@ -23,7 +23,6 @@ const VideosAdmin = () => {
 
   const { showToast } = useToast();
 
-  // 1. LIRE LES VIDÉOS
   const fetchVideos = async () => {
     try {
       setIsLoading(true);
@@ -42,7 +41,6 @@ const VideosAdmin = () => {
     fetchVideos();
   }, []);
 
-  // 2. OUVRIR LA MODALE
   const openModal = (video = null) => {
     if (video) {
       setEditingId(video._id);
@@ -59,7 +57,6 @@ const VideosAdmin = () => {
     setIsModalOpen(true);
   };
 
-  // 3. SAUVEGARDER
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -77,7 +74,6 @@ const VideosAdmin = () => {
     }
   };
 
-  // 4. SUPPRIMER
   const handleDelete = async (id) => {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette vidéo ?")) return;
     
@@ -90,7 +86,6 @@ const VideosAdmin = () => {
     }
   };
 
-  // Petit Helper pour extraire la miniature YouTube si c'est un lien YouTube
   const getYoutubeThumbnail = (url) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -100,9 +95,23 @@ const VideosAdmin = () => {
       : null;
   };
 
+  // Composant Skeleton pour le chargement
+  const VideoSkeleton = () => (
+    <div style={{ ...styles.card, border: 'none' }}>
+      <div className="skeleton-shimmer" style={{ width: '100%', aspectRatio: '16/9' }} />
+      <div style={{ padding: '16px' }}>
+        <div className="skeleton-shimmer" style={{ width: '80%', height: '22px', marginBottom: '10px', borderRadius: '4px' }} />
+        <div className="skeleton-shimmer" style={{ width: '100%', height: '35px', borderRadius: '4px' }} />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 16px 16px', gap: '8px' }}>
+        <div className="skeleton-shimmer" style={{ width: '34px', height: '34px', borderRadius: '4px' }} />
+        <div className="skeleton-shimmer" style={{ width: '34px', height: '34px', borderRadius: '4px' }} />
+      </div>
+    </div>
+  );
+
   return (
     <div style={styles.container}>
-      {/* EN-TÊTE */}
       <div style={styles.header}>
         <div>
           <h2 style={styles.title}>Médiathèque Yely</h2>
@@ -119,9 +128,11 @@ const VideosAdmin = () => {
         </motion.button>
       </div>
 
-      {/* LISTE DES VIDÉOS */}
+      {/* LISTE DES VIDÉOS AVEC SKELETONS */}
       {isLoading ? (
-        <p style={{ color: COLORS.textSecondary }}>Chargement des médias...</p>
+        <div style={styles.grid}>
+          {[1, 2, 3].map((n) => <VideoSkeleton key={n} />)}
+        </div>
       ) : videos.length === 0 ? (
         <div style={styles.emptyState}>Aucune vidéo pour le moment. Cliquez sur "Nouvelle Vidéo" pour commencer.</div>
       ) : (
@@ -136,7 +147,6 @@ const VideosAdmin = () => {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                {/* Section Image / Miniature */}
                 <div style={styles.videoThumbnail}>
                   {thumbnailUrl ? (
                     <img src={thumbnailUrl} alt="Miniature" style={styles.thumbnailImg} />
@@ -147,7 +157,6 @@ const VideosAdmin = () => {
                   )}
                 </div>
 
-                {/* Section Contenu */}
                 <div style={styles.cardContent}>
                   <h3 style={styles.videoTitle}>{video.title}</h3>
                   <p style={styles.videoDesc}>
@@ -155,7 +164,6 @@ const VideosAdmin = () => {
                   </p>
                 </div>
 
-                {/* Actions */}
                 <div style={styles.cardActions}>
                   <button onClick={() => openModal(video)} style={styles.iconBtn}>
                     <Edit2 size={18} color={COLORS.primary} />
@@ -274,7 +282,6 @@ const styles = {
   iconBtn: { background: 'rgba(212, 175, 55, 0.1)', border: 'none', borderRadius: BORDERS.radius.sm, padding: '8px', cursor: 'pointer', display: 'flex', transition: 'all 0.2s' },
   iconBtnDanger: { background: 'rgba(192, 57, 43, 0.1)', border: 'none', borderRadius: BORDERS.radius.sm, padding: '8px', cursor: 'pointer', display: 'flex', transition: 'all 0.2s' },
   
-  // Modale
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, overflowY: 'auto', padding: SPACING.lg },
   modalContent: { ...GLASS.modal, width: '100%', maxWidth: '500px', padding: SPACING.xxl, borderRadius: BORDERS.radius.xl, position: 'relative', margin: 'auto' },
   closeBtn: { position: 'absolute', top: SPACING.lg, right: SPACING.lg, background: 'none', border: 'none', cursor: 'pointer' },

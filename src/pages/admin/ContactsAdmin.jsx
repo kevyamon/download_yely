@@ -36,7 +36,7 @@ const ContactsAdmin = () => {
     fetchContacts();
   }, []);
 
-  // 2. OUVRIR LA MODALE (Création ou Édition)
+  // 2. OUVRIR LA MODALE
   const openModal = (contact = null) => {
     if (contact) {
       setEditingId(contact._id);
@@ -48,7 +48,7 @@ const ContactsAdmin = () => {
     setIsModalOpen(true);
   };
 
-  // 3. SAUVEGARDER (Créer ou Modifier)
+  // 3. SAUVEGARDER
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -60,7 +60,7 @@ const ContactsAdmin = () => {
         showToast("Nouveau lien ajouté !", "success");
       }
       setIsModalOpen(false);
-      fetchContacts(); // Rafraîchir la liste
+      fetchContacts(); 
     } catch (error) {
       showToast("Erreur lors de la sauvegarde.", "error");
     }
@@ -78,6 +78,20 @@ const ContactsAdmin = () => {
       showToast("Erreur lors de la suppression.", "error");
     }
   };
+
+  // Composant Skeleton pour le chargement
+  const ContactSkeleton = () => (
+    <div style={{ ...styles.card, border: 'none' }}>
+      <div style={{ flex: 1 }}>
+        <div className="skeleton-shimmer" style={{ width: '150px', height: '20px', marginBottom: '10px', borderRadius: '4px' }} />
+        <div className="skeleton-shimmer" style={{ width: '220px', height: '14px', borderRadius: '4px' }} />
+      </div>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="skeleton-shimmer" style={{ width: '34px', height: '34px', borderRadius: '4px' }} />
+        <div className="skeleton-shimmer" style={{ width: '34px', height: '34px', borderRadius: '4px' }} />
+      </div>
+    </div>
+  );
 
   return (
     <div style={styles.container}>
@@ -98,9 +112,11 @@ const ContactsAdmin = () => {
         </motion.button>
       </div>
 
-      {/* LISTE DES CONTACTS */}
+      {/* LISTE DES CONTACTS AVEC SKELETONS */}
       {isLoading ? (
-        <p style={{ color: COLORS.textSecondary }}>Chargement des données...</p>
+        <div style={styles.grid}>
+          {[1, 2, 3, 4].map((n) => <ContactSkeleton key={n} />)}
+        </div>
       ) : contacts.length === 0 ? (
         <div style={styles.emptyState}>Aucun contact configuré. Cliquez sur "Nouveau Lien" pour commencer.</div>
       ) : (
@@ -217,7 +233,6 @@ const styles = {
   iconBtn: { background: 'rgba(212, 175, 55, 0.1)', border: 'none', borderRadius: BORDERS.radius.sm, padding: '8px', cursor: 'pointer', display: 'flex' },
   iconBtnDanger: { background: 'rgba(192, 57, 43, 0.1)', border: 'none', borderRadius: BORDERS.radius.sm, padding: '8px', cursor: 'pointer', display: 'flex' },
   
-  // Modale
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 },
   modalContent: { ...GLASS.modal, width: '100%', maxWidth: '450px', padding: SPACING.xxl, borderRadius: BORDERS.radius.xl, position: 'relative' },
   closeBtn: { position: 'absolute', top: SPACING.lg, right: SPACING.lg, background: 'none', border: 'none', cursor: 'pointer' },
