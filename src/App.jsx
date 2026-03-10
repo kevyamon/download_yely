@@ -16,6 +16,7 @@ import ContactsAdmin from './pages/admin/ContactsAdmin';
 import DashboardHome from './pages/admin/DashboardHome';
 import FoundersAdmin from './pages/admin/FoundersAdmin';
 import VideosAdmin from './pages/admin/VideosAdmin';
+import AppLinksAdmin from './pages/admin/AppLinksAdmin';
 
 // 🛡️ GARDE DU CORPS DES ROUTES ADMIN
 const ProtectedRoute = ({ children }) => {
@@ -49,7 +50,9 @@ const AppRoutes = () => {
                 
                 {/* La vraie page des statistiques */}
                 <Route path="dashboard" element={<DashboardHome />} />
-                
+
+                <Route path="app-links" element={<AppLinksAdmin />} /> {/* NOUVELLE ROUTE */}
+
                 {/* La vraie page de gestion des contacts */}
                 <Route path="contacts" element={<ContactsAdmin />} />
                 
@@ -57,6 +60,7 @@ const AppRoutes = () => {
 
                 <Route path="founders" element={<FoundersAdmin />} />
                 <Route path="videos" element={<VideosAdmin />} />
+
               </Routes>
             </AdminLayout>
           </ProtectedRoute>

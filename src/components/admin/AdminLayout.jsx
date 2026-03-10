@@ -1,6 +1,6 @@
 // src/components/admin/AdminLayout.jsx
 import { AnimatePresence, motion } from 'framer-motion';
-import { LayoutDashboard, LogOut, Menu, UserSquare2, Users, Video, X } from 'lucide-react';
+import { LayoutDashboard, Link as LinkIcon, LogOut, Menu, UserSquare2, Users, Video, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoImg from '../../assets/logo.png';
@@ -32,6 +32,7 @@ const AdminLayout = ({ children }) => {
 
   const menuItems = [
     { path: '/admin/dashboard', name: 'Statistiques', icon: LayoutDashboard },
+    { path: '/admin/app-links', name: 'Liens de l\'App', icon: LinkIcon }, // <-- LE NOUVEAU MENU EST ICI
     { path: '/admin/contacts', name: 'Contacts & Liens', icon: Users },
     { path: '/admin/founders', name: 'Équipe', icon: UserSquare2 },
     { path: '/admin/videos', name: 'Vidéos', icon: Video },
