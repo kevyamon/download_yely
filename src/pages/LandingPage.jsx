@@ -90,6 +90,15 @@ const LandingPage = () => {
     duration: 0.3
   };
 
+  // LE SECRET DU ZERO SCROLL POUR FRAMER MOTION :
+  // On s'assure que le conteneur d'animation prend toute la hauteur disponible
+  const viewStyle = { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    flex: 1, 
+    height: '100%' 
+  };
+
   return (
     <Layout onNavigate={setCurrentView} currentView={currentView}>
       
@@ -103,6 +112,7 @@ const LandingPage = () => {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
+            style={viewStyle}
           >
             <Hero 
               onAndroidClick={handleAndroidDownload} 
@@ -119,6 +129,7 @@ const LandingPage = () => {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
+            style={viewStyle}
           >
             <ContactsView onBack={() => setCurrentView(VIEWS.HOME)} />
           </motion.div>
@@ -132,6 +143,7 @@ const LandingPage = () => {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
+            style={viewStyle}
           >
             <FoundersView onBack={() => setCurrentView(VIEWS.HOME)} />
           </motion.div>
@@ -145,6 +157,7 @@ const LandingPage = () => {
             exit="out"
             variants={pageVariants}
             transition={pageTransition}
+            style={viewStyle}
           >
             <VideosView onBack={() => setCurrentView(VIEWS.HOME)} />
           </motion.div>

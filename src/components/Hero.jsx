@@ -1,7 +1,7 @@
 // src/components/Hero.jsx
 import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, Apple, X } from 'lucide-react';
+import { AlertCircle, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useToast } from '../context/ToastContext';
@@ -9,10 +9,17 @@ import { BORDERS, COLORS, FONTS, GLASS, SHADOWS, SPACING } from '../theme/theme'
 
 import logoImg from '../assets/logo.png';
 
-// Le logo Android SVG Pur
+// Le VRAI logo Android (complet)
 const AndroidIcon = ({ size = 24, color = "currentColor" }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={color} xmlns="http://www.w3.org/2000/svg">
-    <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0004.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.244 13.8533 7.85 12 7.85c-1.8533 0-3.5902.394-5.1367 1.1005L4.841 5.4475a.416.416 0 00-.5676-.1521.416.416 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4396" />
+  <svg width={size} height={size} viewBox="0 0 448 512" fill={color} xmlns="http://www.w3.org/2000/svg">
+    <path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 13.6-11.1 24.6-24.6 24.6-13.6 0-24.6-11.1-24.6-24.6V146.3H151v47.4c0 13.6-11.1 24.6-24.6 24.6-13.6 0-24.6-11.1-24.6-24.6v-47.4H61.6c-31.1 0-45.7 23.3-53.4 54.2C3.3 218.4 0 240 0 240v132.8c0 23.2 18.8 42 42 42h364c23.2 0 42-18.8 42-42V240c0 0-3.3-21.6-8.2-39.5zM122.5 284.1c-14.2 0-25.8-11.6-25.8-25.8s11.6-25.8 25.8-25.8 25.8 11.6 25.8 25.8-11.6 25.8-25.8 25.8zm203 0c-14.2 0-25.8-11.6-25.8-25.8s11.6-25.8 25.8-25.8 25.8 11.6 25.8 25.8-11.6 25.8-25.8 25.8zM224 86.8c-28.9 0-55.8 8.6-78.5 23.5L111.8 76.5c-4.3-4.3-11.4-4.3-15.7 0-4.3 4.3-4.3 11.4 0 15.7l35 35c-37.4 28.5-62.7 73.1-66.7 123.6h203.4V251h116.4c-4-50.5-29.3-95.1-66.7-123.6l35-35c4.3-4.3 4.3-11.4 0-15.7-4.3-4.3-11.4-4.3-15.7 0l-33.7 33.8C279.8 95.4 252.9 86.8 224 86.8z"/>
+  </svg>
+);
+
+// Le VRAI logo Apple
+const AppleIcon = ({ size = 24, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 384 512" fill={color} xmlns="http://www.w3.org/2000/svg">
+    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
   </svg>
 );
 
@@ -20,7 +27,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   const socket = useSocket();
   const { showToast } = useToast();
   
-  // STRATÉGIE BANK GRADE : On initialise avec le cache du navigateur pour éviter le "0" au F5
   const [stats, setStats] = useState(() => {
     const cachedStats = localStorage.getItem('yely_stats');
     return cachedStats ? JSON.parse(cachedStats) : { androidClicks: 0, iosClicks: 0 };
@@ -29,7 +35,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingPlatform, setPendingPlatform] = useState(null);
 
-  // Synchronisation avec le backend et mise à jour du cache
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -47,7 +52,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
     fetchStats();
   }, []);
 
-  // Écoute du temps réel via Socket
   useEffect(() => {
     if (!socket) return;
     socket.on('stats_updated', (newStats) => {
@@ -70,8 +74,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
       else if (pendingPlatform === 'ios') onIosClick();
     }, 800);
   };
-
-  // --- ANIMATIONS IMMERSIVES (FRAMER MOTION) --- //
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -121,7 +123,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         initial="hidden"
         animate="show"
       >
-        {/* LOGO ARRONDI AVEC ANIMATION D'ENTRÉE */}
         <motion.div variants={itemVariants} style={styles.logoWrapper}>
           <img 
             src={logoImg} 
@@ -142,7 +143,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
           Téléchargez l'application officielle Yely.
         </motion.p>
 
-        {/* BOUTONS AVEC LE VRAI HEARTBEAT CONTINU */}
+        {/* NOUVEAU LAYOUT : BOUTONS CARTES (CARRÉS) CÔTE À CÔTE */}
         <motion.div variants={itemVariants} style={styles.buttonContainer}>
           
           <div style={styles.btnWrapper}>
@@ -155,7 +156,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               whileTap={{ scale: 0.95 }}
             >
               <div style={styles.btnContent}>
-                <div style={styles.btnIconWrapper}><AndroidIcon size={24} /></div>
+                <div style={styles.btnIconWrapper}><AndroidIcon size={32} /></div>
                 <div style={styles.btnTextWrapper}>
                   <span style={styles.btnTitle}>Télécharger</span>
                   <span style={styles.btnSub}>pour Android</span>
@@ -175,9 +176,9 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               whileTap={{ scale: 0.95 }}
             >
               <div style={styles.btnContent}>
-                <div style={styles.btnIconWrapper}><Apple size={24} color={COLORS.textPrimary} /></div>
+                <div style={styles.btnIconWrapper}><AppleIcon size={32} color={COLORS.textPrimary} /></div>
                 <div style={styles.btnTextWrapper}>
-                  <span style={styles.btnTitle}>Installer la PWA</span>
+                  <span style={styles.btnTitle}>Installer</span>
                   <span style={{...styles.btnSub, color: COLORS.textSecondary}}>pour iPhone</span>
                 </div>
               </div>
@@ -188,7 +189,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         </motion.div>
       </motion.div>
 
-      {/* MODALE D'AVERTISSEMENT IMMERSIVE */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div 
@@ -240,53 +240,97 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   );
 };
 
-// COMPACTAGE DES STYLES POUR LE SANS-SCROLL ET LE RECENTRAGE HAUT
 const styles = {
+  // AJUSTEMENTS 100% ECRAN ZÉRO SCROLL
   container: { 
     display: 'flex', 
     flexDirection: 'column', 
     alignItems: 'center', 
-    justifyContent: 'flex-start', // Remonte le contenu vers le haut
-    paddingTop: '8vh', // Ajuste l'espace au-dessus
-    paddingLeft: '20px',
-    paddingRight: '20px',
-    paddingBottom: '10px',
+    justifyContent: 'center', // Centre tout le contenu verticalement dans l'espace restant
+    flex: 1, // Permet au Hero de remplir l'espace vide entre le Header et le Footer
+    padding: '2vh 20px', // Des marges relatives à l'écran plutôt que fixes
     textAlign: 'center',
-    minHeight: '75dvh', // Réduit pour laisser la place au copyright d'apparaître sans scroll
+    width: '100%',
     boxSizing: 'border-box'
   },
+  
+  // LOGO ET TEXTES LÉGÈREMENT OPTIMISÉS POUR NE PAS PRENDRE TROP DE PLACE
   logoWrapper: { 
-    marginBottom: '10px', // Marge réduite
+    marginBottom: '2vh', 
     borderRadius: '50%', 
     overflow: 'hidden', 
-    width: '90px', // Légèrement réduit
-    height: '90px', 
+    width: '80px', // Un poil plus petit pour faire de la place aux boutons
+    height: '80px', 
     display: 'flex', 
     alignItems: 'center', 
     justifyContent: 'center', 
     backgroundColor: COLORS.richBlack,
     border: `3px solid ${COLORS.primary}`,
-    boxShadow: `0 0 40px ${COLORS.primary}66`
+    boxShadow: `0 0 30px ${COLORS.primary}66`
   },
   logoImage: { width: '100%', height: '100%', objectFit: 'cover' },
   logoCircle: { width: '100%', height: '100%', borderRadius: '50%', backgroundColor: COLORS.background, border: `4px solid ${COLORS.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  logoY: { fontSize: '40px', fontWeight: '900', color: COLORS.primary },
-  title: { fontSize: FONTS.sizes.h1, color: COLORS.textPrimary, marginBottom: '2px', fontWeight: '800' }, // Marge réduite
-  subtitle: { fontSize: FONTS.sizes.body, color: COLORS.textSecondary, marginBottom: '15px' }, // Marge réduite
-  buttonContainer: { display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', maxWidth: '380px' }, // Plus large (380px au lieu de 340px)
-  btnWrapper: { display: 'flex', flexDirection: 'column', gap: '2px', position: 'relative' },
+  logoY: { fontSize: '32px', fontWeight: '900', color: COLORS.primary },
   
-  downloadBtn: {
-    ...GLASS.card, position: 'relative', height: '50px', // Moins long (50px au lieu de 60px)
-    display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', background: COLORS.glassSurface
+  title: { fontSize: FONTS.sizes.h2, color: COLORS.textPrimary, marginBottom: '4px', fontWeight: '800' },
+  subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '3vh' }, 
+
+  // NOUVEAUX BOUTONS "CARTES CARRÉES" CÔTE À CÔTE
+  buttonContainer: { 
+    display: 'flex', 
+    flexDirection: 'row', // Les place côte à côte
+    justifyContent: 'center',
+    gap: '15px', 
+    width: '100%', 
+    maxWidth: '400px' 
+  }, 
+  btnWrapper: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '8px', 
+    flex: 1, // Chaque bouton prend exactement 50% de l'espace
+    position: 'relative' 
   },
-  btnContent: { display: 'flex', alignItems: 'center', width: '100%', padding: '0 15px', zIndex: 2, position: 'relative' },
-  btnIconWrapper: { width: '40px', display: 'flex', justifyContent: 'center', color: COLORS.primary },
-  btnTextWrapper: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderLeft: `1px solid ${COLORS.border}`, paddingLeft: '12px', marginLeft: '5px' },
-  btnTitle: { color: COLORS.textPrimary, fontSize: FONTS.sizes.h4, fontWeight: 'bold' },
-  btnSub: { color: COLORS.primary, fontSize: FONTS.sizes.caption },
-  counter: { fontSize: '11px', color: COLORS.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px' },
+  downloadBtn: {
+    ...GLASS.card, 
+    position: 'relative', 
+    height: '110px', // Hauteur fixe pour faire un effet "carte"
+    width: '100%',
+    display: 'flex', 
+    flexDirection: 'column', // Empile l'icône et le texte verticalement
+    alignItems: 'center', 
+    justifyContent: 'center',
+    padding: '10px', 
+    cursor: 'pointer', 
+    background: COLORS.glassSurface,
+    borderRadius: '16px' // Un bon arrondi pour l'effet carte
+  },
+  btnContent: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    width: '100%', 
+    zIndex: 2, 
+    position: 'relative',
+    gap: '8px'
+  },
+  btnIconWrapper: { 
+    display: 'flex', 
+    justifyContent: 'center', 
+    color: COLORS.primary 
+  },
+  btnTextWrapper: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', // Centre le texte
+    textAlign: 'center'
+  },
+  btnTitle: { color: COLORS.textPrimary, fontSize: FONTS.sizes.body, fontWeight: 'bold' }, // Un peu plus petit pour rentrer dans la carte
+  btnSub: { color: COLORS.primary, fontSize: '11px', marginTop: '2px' },
+  counter: { fontSize: '10px', color: COLORS.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' },
   
+  // MODALE (inchangée, juste le visuel)
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: SPACING.md },
   modalContent: { ...GLASS.modal, width: '100%', maxWidth: '380px', maxHeight: '90vh', overflowY: 'auto', borderRadius: BORDERS.radius.xl, padding: SPACING.lg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', border: `1px solid ${COLORS.border}`, boxShadow: `0 20px 40px rgba(0,0,0,0.5)` },
   modalCloseBtn: { position: 'absolute', top: SPACING.md, right: SPACING.md, background: 'none', border: 'none', cursor: 'pointer', padding: '8px' },
