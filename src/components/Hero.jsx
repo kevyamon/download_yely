@@ -73,7 +73,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
   // --- ANIMATIONS IMMERSIVES (FRAMER MOTION) --- //
 
-  // 1. Le chef d'orchestre : Fait apparaître les éléments un par un en cascade
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -82,7 +81,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
     }
   };
 
-  // 2. Les éléments enfants (glissent vers le haut)
   const itemVariants = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
     show: { 
@@ -91,7 +89,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
     }
   };
 
-  // 3. Le vrai "Heartbeat" (Pulse)
   const pulseAndroidVariants = {
     pulse: {
       scale: [1, 1.025, 1],
@@ -112,7 +109,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         `0px 0px 15px 3px ${COLORS.textPrimary}40`,
         `0px 0px 0px 0px ${COLORS.textPrimary}00`
       ],
-      transition: { duration: 2.5, ease: "easeInOut", repeat: Infinity, delay: 1.25 } // Décalé pour un effet asynchrone stylé
+      transition: { duration: 2.5, ease: "easeInOut", repeat: Infinity, delay: 1.25 }
     }
   };
 
@@ -158,7 +155,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               whileTap={{ scale: 0.95 }}
             >
               <div style={styles.btnContent}>
-                <div style={styles.btnIconWrapper}><AndroidIcon size={28} /></div>
+                <div style={styles.btnIconWrapper}><AndroidIcon size={26} /></div>
                 <div style={styles.btnTextWrapper}>
                   <span style={styles.btnTitle}>Télécharger</span>
                   <span style={styles.btnSub}>pour Android</span>
@@ -178,7 +175,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               whileTap={{ scale: 0.95 }}
             >
               <div style={styles.btnContent}>
-                <div style={styles.btnIconWrapper}><Apple size={28} color={COLORS.textPrimary} /></div>
+                <div style={styles.btnIconWrapper}><Apple size={26} color={COLORS.textPrimary} /></div>
                 <div style={styles.btnTextWrapper}>
                   <span style={styles.btnTitle}>Installer la PWA</span>
                   <span style={{...styles.btnSub, color: COLORS.textSecondary}}>pour iPhone</span>
@@ -212,7 +209,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               </button>
               
               <div style={styles.modalIconBox}>
-                <AlertCircle size={40} color={COLORS.primary} />
+                <AlertCircle size={36} color={COLORS.primary} />
               </div>
               
               <h2 style={styles.modalTitle}>Information Importante</h2>
@@ -243,36 +240,57 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   );
 };
 
+// COMPACTAGE DES STYLES POUR LE SANS-SCROLL
 const styles = {
-  container: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center' },
-  logoWrapper: { marginBottom: '30px', borderRadius: '50%', overflow: 'hidden', width: '130px', height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.richBlack, boxShadow: `0 0 40px ${COLORS.primary}44` },
+  container: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: '15px 20px', 
+    textAlign: 'center',
+    minHeight: '85dvh', // Laisse de l'espace pour le header/copyright
+    boxSizing: 'border-box'
+  },
+  logoWrapper: { 
+    marginBottom: '15px', 
+    borderRadius: '50%', 
+    overflow: 'hidden', 
+    width: '100px', 
+    height: '100px', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    backgroundColor: COLORS.richBlack, 
+    boxShadow: `0 0 40px ${COLORS.primary}44` 
+  },
   logoImage: { width: '100%', height: '100%', objectFit: 'cover' },
   logoCircle: { width: '100%', height: '100%', borderRadius: '50%', backgroundColor: COLORS.background, border: `4px solid ${COLORS.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  logoY: { fontSize: '60px', fontWeight: '900', color: COLORS.primary },
-  title: { fontSize: FONTS.sizes.h1, color: COLORS.textPrimary, marginBottom: '10px', fontWeight: '800' },
-  subtitle: { fontSize: FONTS.sizes.body, color: COLORS.textSecondary, marginBottom: '50px' },
-  buttonContainer: { display: 'flex', flexDirection: 'column', gap: '30px', width: '100%', maxWidth: '340px' },
-  btnWrapper: { display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' },
+  logoY: { fontSize: '40px', fontWeight: '900', color: COLORS.primary },
+  title: { fontSize: FONTS.sizes.h1, color: COLORS.textPrimary, marginBottom: '5px', fontWeight: '800' },
+  subtitle: { fontSize: FONTS.sizes.body, color: COLORS.textSecondary, marginBottom: '25px' },
+  buttonContainer: { display: 'flex', flexDirection: 'column', gap: '15px', width: '100%', maxWidth: '340px' },
+  btnWrapper: { display: 'flex', flexDirection: 'column', gap: '4px', position: 'relative' },
   
   downloadBtn: {
-    ...GLASS.card, position: 'relative', height: '75px', display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', background: COLORS.glassSurface
+    ...GLASS.card, position: 'relative', height: '60px', display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', background: COLORS.glassSurface
   },
-  btnContent: { display: 'flex', alignItems: 'center', width: '100%', padding: '0 20px', zIndex: 2, position: 'relative' },
-  btnIconWrapper: { width: '45px', display: 'flex', justifyContent: 'center', color: COLORS.primary },
-  btnTextWrapper: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderLeft: `1px solid ${COLORS.border}`, paddingLeft: '15px', marginLeft: '5px' },
+  btnContent: { display: 'flex', alignItems: 'center', width: '100%', padding: '0 15px', zIndex: 2, position: 'relative' },
+  btnIconWrapper: { width: '40px', display: 'flex', justifyContent: 'center', color: COLORS.primary },
+  btnTextWrapper: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderLeft: `1px solid ${COLORS.border}`, paddingLeft: '12px', marginLeft: '5px' },
   btnTitle: { color: COLORS.textPrimary, fontSize: FONTS.sizes.h4, fontWeight: 'bold' },
   btnSub: { color: COLORS.primary, fontSize: FONTS.sizes.caption },
-  counter: { fontSize: '12px', color: COLORS.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' },
+  counter: { fontSize: '11px', color: COLORS.textSecondary, fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '4px' },
   
-  modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: SPACING.lg },
-  modalContent: { ...GLASS.modal, width: '100%', maxWidth: '400px', borderRadius: BORDERS.radius.xl, padding: SPACING.xxl, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', border: `1px solid ${COLORS.border}`, boxShadow: `0 20px 40px rgba(0,0,0,0.5)` },
-  modalCloseBtn: { position: 'absolute', top: SPACING.lg, right: SPACING.lg, background: 'none', border: 'none', cursor: 'pointer', padding: '8px' },
-  modalIconBox: { width: '70px', height: '70px', borderRadius: '35px', backgroundColor: 'rgba(212, 175, 55, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: SPACING.lg },
-  modalTitle: { fontSize: FONTS.sizes.h3, color: COLORS.textPrimary, fontWeight: 'bold', marginBottom: SPACING.lg, textAlign: 'center' },
-  modalTextContainer: { backgroundColor: 'rgba(0,0,0,0.2)', padding: SPACING.lg, borderRadius: BORDERS.radius.lg, marginBottom: SPACING.xxl, width: '100%' },
-  modalText: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, lineHeight: 1.6, textAlign: 'left' },
-  modalDivider: { height: '1px', backgroundColor: COLORS.border, margin: `${SPACING.md}px 0` },
-  modalConfirmBtn: { backgroundColor: COLORS.primary, color: '#000', border: 'none', borderRadius: BORDERS.radius.pill, height: '50px', width: '100%', fontSize: FONTS.sizes.body, fontWeight: 'bold', cursor: 'pointer' }
+  modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: SPACING.md },
+  modalContent: { ...GLASS.modal, width: '100%', maxWidth: '380px', maxHeight: '90vh', overflowY: 'auto', borderRadius: BORDERS.radius.xl, padding: SPACING.lg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', border: `1px solid ${COLORS.border}`, boxShadow: `0 20px 40px rgba(0,0,0,0.5)` },
+  modalCloseBtn: { position: 'absolute', top: SPACING.md, right: SPACING.md, background: 'none', border: 'none', cursor: 'pointer', padding: '8px' },
+  modalIconBox: { width: '60px', height: '60px', borderRadius: '30px', backgroundColor: 'rgba(212, 175, 55, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: SPACING.md },
+  modalTitle: { fontSize: FONTS.sizes.h3, color: COLORS.textPrimary, fontWeight: 'bold', marginBottom: SPACING.md, textAlign: 'center' },
+  modalTextContainer: { backgroundColor: 'rgba(0,0,0,0.2)', padding: SPACING.md, borderRadius: BORDERS.radius.lg, marginBottom: SPACING.lg, width: '100%' },
+  modalText: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, lineHeight: 1.5, textAlign: 'left' },
+  modalDivider: { height: '1px', backgroundColor: COLORS.border, margin: `${SPACING.sm}px 0` },
+  modalConfirmBtn: { backgroundColor: COLORS.primary, color: '#000', border: 'none', borderRadius: BORDERS.radius.pill, height: '45px', width: '100%', fontSize: FONTS.sizes.body, fontWeight: 'bold', cursor: 'pointer' }
 };
 
 export default Hero;
