@@ -138,7 +138,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         </motion.div>
 
         <motion.h1 variants={itemVariants} style={styles.title}>
-          L'élégance à chaque trajet.
+          L'ELITE DU TRANSPORT.
         </motion.h1>
         
         <motion.p variants={itemVariants} style={styles.subtitle}>
