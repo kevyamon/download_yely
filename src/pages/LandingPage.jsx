@@ -7,6 +7,7 @@ import FoundersView from '../components/FoundersView';
 import Hero from '../components/Hero';
 import Layout from '../components/Layout';
 import VideosView from '../components/VideosView';
+import { useToast } from '../context/ToastContext';
 
 // Constantes pour la navigation
 const VIEWS = {
@@ -18,6 +19,7 @@ const VIEWS = {
 
 const LandingPage = () => {
   const [currentView, setCurrentView] = useState(VIEWS.HOME);
+  const { showToast } = useToast();
 
   // LOGIQUE DE TELECHARGEMENT ANDROID
   const handleAndroidDownload = async () => {
@@ -28,10 +30,11 @@ const LandingPage = () => {
       if (apkUrl && apkUrl.startsWith('http')) {
         window.location.href = apkUrl;
       } else {
-        alert("La mise à jour des serveurs est en cours. Le lien sera disponible dans quelques minutes !");
+        showToast("La mise à jour des serveurs est en cours. Le lien sera disponible dans quelques minutes !", "info");
       }
     } catch (err) {
       console.error("Erreur download:", err);
+      showToast("Erreur de connexion au serveur.", "error");
     }
   };
 
@@ -44,10 +47,11 @@ const LandingPage = () => {
       if (pwaUrl && pwaUrl.startsWith('http')) {
         window.location.href = pwaUrl;
       } else {
-        alert("Le tutoriel d'installation iPhone arrive bientot !");
+        showToast("Le tutoriel d'installation iPhone arrive bientôt !", "info");
       }
     } catch (err) {
       console.error("Erreur click iOS:", err);
+      showToast("Erreur de connexion au serveur.", "error");
     }
   };
 

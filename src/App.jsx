@@ -2,9 +2,9 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { SocketProvider } from './context/SocketContext';
+import { ToastProvider } from './context/ToastContext'; // <-- NOUVEAU
 import { COLORS } from './theme/theme';
 
-// 1. ON IMPORTE LA VRAIE PAGE QU'ON A CODÉE
 import LandingPage from './pages/LandingPage';
 
 // Page Admin temporaire
@@ -17,13 +17,15 @@ const AdminDashboard = () => (
 const App = () => {
   return (
     <SocketProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* 2. ON UTILISE LA VRAIE PAGE ICI */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/admin/*" element={<AdminDashboard />} />
-        </Routes>
-      </BrowserRouter>
+      {/* On englobe l'application avec le ToastProvider */}
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/admin/*" element={<AdminDashboard />} />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </SocketProvider>
   );
 };
