@@ -11,8 +11,9 @@ import LandingPage from './pages/LandingPage';
 // Pages Admin
 import AdminLayout from './components/admin/AdminLayout';
 import AdminLogin from './pages/admin/AdminLogin';
+import AdminRegister from './pages/admin/AdminRegister'; // <-- IMPORT DE LA PAGE D'INITIALISATION
+import ContactsAdmin from './pages/admin/ContactsAdmin';
 import DashboardHome from './pages/admin/DashboardHome';
-import ContactsAdmin from './pages/admin/ContactsAdmin'; // <-- IMPORT AJOUTÉ
 
 // 🛡️ GARDE DU CORPS DES ROUTES ADMIN
 const ProtectedRoute = ({ children }) => {
@@ -30,8 +31,9 @@ const AppRoutes = () => {
       {/* Côté Public */}
       <Route path="/" element={<LandingPage />} />
       
-      {/* Connexion Admin */}
+      {/* Connexion et Initialisation Admin */}
       <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/setup" element={<AdminRegister />} /> {/* <-- ROUTE TEMPORAIRE SÉCURISÉE */}
       
       {/* Tableau de bord sécurisé (Sous-Routes) */}
       <Route 
