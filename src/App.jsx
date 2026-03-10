@@ -1,21 +1,32 @@
 // src/App.jsx
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
 import { SocketProvider } from './context/SocketContext';
+import { COLORS } from './theme/theme';
 
-// Pages temporaires pour valider l'architecture
-const LandingPage = () => <div style={{ color: 'white', padding: 50 }}>Landing Page Yely en construction...</div>;
-const AdminDashboard = () => <div style={{ color: '#D4AF37', padding: 50 }}>Dashboard Admin en construction...</div>;
+// Pages temporaires
+const LandingPage = () => (
+  <Layout>
+    <div style={{ padding: 50, color: COLORS.textPrimary, textAlign: 'center' }}>
+      <h1>Centre Yely</h1>
+      <p>Boutons de telechargement a venir ici...</p>
+    </div>
+  </Layout>
+);
+
+const AdminDashboard = () => (
+  <div style={{ color: COLORS.primary, padding: 50 }}>
+    Dashboard Admin en construction... (Pas de Layout public ici)
+  </div>
+);
 
 const App = () => {
   return (
     <SocketProvider>
       <BrowserRouter>
         <Routes>
-          {/* Route publique : La Download Page */}
           <Route path="/" element={<LandingPage />} />
-          
-          {/* Route privee : Ton tableau de bord de gestion */}
           <Route path="/admin/*" element={<AdminDashboard />} />
         </Routes>
       </BrowserRouter>
