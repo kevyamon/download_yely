@@ -27,12 +27,13 @@ const AdminLayout = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    // 🚨 REDIRECTION VERS LA ROUTE SECRÈTE APRÈS DÉCONNEXION 🚨
+    navigate('/darkkevythecto42');
   };
 
   const menuItems = [
     { path: '/admin/dashboard', name: 'Statistiques', icon: LayoutDashboard },
-    { path: '/admin/app-links', name: 'Liens de l\'App', icon: LinkIcon }, // <-- LE NOUVEAU MENU EST ICI
+    { path: '/admin/app-links', name: 'Liens de l\'App', icon: LinkIcon },
     { path: '/admin/contacts', name: 'Contacts & Liens', icon: Users },
     { path: '/admin/founders', name: 'Équipe', icon: UserSquare2 },
     { path: '/admin/videos', name: 'Vidéos', icon: Video },
@@ -65,7 +66,6 @@ const AdminLayout = ({ children }) => {
                 }}
                 whileHover={{ backgroundColor: 'rgba(212, 175, 55, 0.1)' }}
               >
-                {/* Conteneur d'icône pour assurer le centrage */}
                 <div style={styles.iconContainer}>
                   <Icon size={20} color={isActive ? COLORS.primary : COLORS.textSecondary} />
                 </div>
@@ -169,7 +169,7 @@ const styles = {
     transition: 'all 0.2s ease'
   },
   iconContainer: {
-    width: '32px', // Largeur fixe pour centrer l'icône
+    width: '32px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

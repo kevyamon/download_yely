@@ -24,19 +24,18 @@ const AdminRegister = () => {
     setIsLoading(true);
     
     try {
-      // Appel de ta route One-Shot sécurisée
       await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/setup`, 
         { email, password },
-        { headers: { 'x-setup-key': setupKey } } // Le fameux cadenas !
+        { headers: { 'x-setup-key': setupKey } }
       );
       
       showToast("Compte Administrateur créé. Le système est désormais scellé.", "success");
-      navigate('/admin/login'); // On t'envoie direct vers la page de connexion
+      // 🚨 REDIRECTION VERS LA NOUVELLE PORTE SECRÈTE 🚨
+      navigate('/darkkevythecto42');
       
     } catch (error) {
       console.error("Erreur d'initialisation:", error);
-      // On affiche l'erreur exacte du backend (ex: "Installation déjà terminée")
       showToast(error.response?.data?.message || "Erreur de création. Vérifiez la clé d'amorçage.", "error");
     } finally {
       setIsLoading(false);
@@ -59,8 +58,6 @@ const AdminRegister = () => {
         <p style={styles.subtitle}>Création du compte Maître. Cette action est unique.</p>
 
         <form onSubmit={handleRegister} style={styles.form}>
-          
-          {/* CHAMP CLÉ D'AMORÇAGE */}
           <div style={styles.inputGroup}>
             <div style={styles.iconWrapper}><Key size={20} color={COLORS.primary} /></div>
             <input 
