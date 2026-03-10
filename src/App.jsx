@@ -12,6 +12,7 @@ import LandingPage from './pages/LandingPage';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminLogin from './pages/admin/AdminLogin';
 import DashboardHome from './pages/admin/DashboardHome';
+import ContactsAdmin from './pages/admin/ContactsAdmin'; // <-- IMPORT AJOUTÉ
 
 // 🛡️ GARDE DU CORPS DES ROUTES ADMIN
 const ProtectedRoute = ({ children }) => {
@@ -45,8 +46,10 @@ const AppRoutes = () => {
                 {/* La vraie page des statistiques */}
                 <Route path="dashboard" element={<DashboardHome />} />
                 
-                {/* Les autres vues (Contacts, Videos...) viendront s'ajouter ici ! */}
-                <Route path="contacts" element={<h2 style={{color: 'white'}}>Gestion des contacts à venir...</h2>} />
+                {/* La vraie page de gestion des contacts */}
+                <Route path="contacts" element={<ContactsAdmin />} />
+                
+                {/* Les autres vues (Founders, Videos...) viendront s'ajouter ici ! */}
                 <Route path="founders" element={<h2 style={{color: 'white'}}>Gestion de l'équipe à venir...</h2>} />
                 <Route path="videos" element={<h2 style={{color: 'white'}}>Gestion des vidéos à venir...</h2>} />
               </Routes>
@@ -56,7 +59,7 @@ const AppRoutes = () => {
       />
 
       {/* 🚨 SOLUTION ANTI ÉCRAN NOIR 🚨 */}
-      {/* Si l'utilisateur tape une adresse qui n'existe pas (ex: /dashboard au lieu de /admin/dashboard), on le renvoie à l'accueil */}
+      {/* Si l'utilisateur tape une adresse qui n'existe pas, on le renvoie à l'accueil */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
