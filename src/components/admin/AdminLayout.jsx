@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoImg from '../../assets/logo.png';
 import { useAuth } from '../../context/AuthContext';
-import { BORDERS, COLORS, FONTS, GLASS, SHADOWS, SPACING } from '../../theme/theme';
+import { BORDERS, COLORS, FONTS, SPACING } from '../../theme/theme';
 
 const AdminLayout = ({ children }) => {
   const { logout } = useAuth();
@@ -27,7 +27,6 @@ const AdminLayout = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    // 🚨 REDIRECTION VERS LA ROUTE SECRÈTE APRÈS DÉCONNEXION 🚨
     navigate('/darkkevythecto42');
   };
 
@@ -141,7 +140,8 @@ const AdminLayout = ({ children }) => {
 };
 
 const styles = {
-  container: { display: 'flex', minHeight: '100vh', backgroundColor: COLORS.richBlack, flexDirection: 'row' },
+  // MODIFICATION : Hauteur fixe pour permettre le scroll interne
+  container: { height: '100vh', width: '100vw', display: 'flex', backgroundColor: COLORS.richBlack, flexDirection: 'row', overflow: 'hidden' },
   sidebar: {
     width: '280px', backgroundColor: COLORS.pureBlack, borderLeft: `1px solid ${COLORS.border}`,
     display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, bottom: 0, right: 0, zIndex: 10,
@@ -150,51 +150,25 @@ const styles = {
     width: '280px', backgroundColor: COLORS.pureBlack, borderLeft: `1px solid ${COLORS.border}`,
     display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, bottom: 0, right: 0, zIndex: 100,
   },
-  mobileOverlay: {
-    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)', zIndex: 90,
-  },
-  logoSection: {
-    height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${SPACING.xl}px`, borderBottom: `1px solid ${COLORS.border}`,
-  },
+  mobileOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)', zIndex: 90 },
+  logoSection: { height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${SPACING.xl}px`, borderBottom: `1px solid ${COLORS.border}` },
   logo: { width: '40px', height: '40px', objectFit: 'contain' },
   brandName: { color: COLORS.textPrimary, fontSize: FONTS.sizes.h3, fontWeight: 'bold' },
   closeMobileBtn: { background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' },
   nav: { flex: 1, padding: `${SPACING.xl}px 0`, display: 'flex', flexDirection: 'column', gap: SPACING.xs },
-  navItem: { 
-    display: 'flex', 
-    alignItems: 'center', 
-    padding: `${SPACING.md}px ${SPACING.xl}px`, 
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-  },
-  iconContainer: {
-    width: '32px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: SPACING.sm
-  },
+  navItem: { display: 'flex', alignItems: 'center', padding: `${SPACING.md}px ${SPACING.xl}px`, cursor: 'pointer', transition: 'all 0.2s ease' },
+  iconContainer: { width: '32px', display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: SPACING.sm },
   navText: { fontSize: FONTS.sizes.body },
   logoutSection: { padding: SPACING.xl, borderTop: `1px solid ${COLORS.border}` },
-  logoutBtn: {
-    display: 'flex', alignItems: 'center', width: '100%', padding: `${SPACING.md}px ${SPACING.lg}px`,
-    backgroundColor: 'transparent', border: `1px solid ${COLORS.danger}`, borderRadius: BORDERS.radius.lg, cursor: 'pointer',
-  },
-  mainContent: { flex: 1, display: 'flex', flexDirection: 'column', width: '100%', minWidth: 0 },
-  topbar: {
-    height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${SPACING.lg}px`,
-    borderBottom: `1px solid ${COLORS.border}`, backgroundColor: 'rgba(10,10,10,0.8)',
-    backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 5,
-  },
+  logoutBtn: { display: 'flex', alignItems: 'center', width: '100%', padding: `${SPACING.md}px ${SPACING.lg}px`, backgroundColor: 'transparent', border: `1px solid ${COLORS.danger}`, borderRadius: BORDERS.radius.lg, cursor: 'pointer' },
+  mainContent: { flex: 1, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' },
+  topbar: { height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${SPACING.lg}px`, borderBottom: `1px solid ${COLORS.border}`, backgroundColor: 'rgba(10,10,10,0.8)', backdropFilter: 'blur(10px)', zIndex: 5 },
   topbarRight: { display: 'flex', alignItems: 'center', gap: SPACING.md },
   hamburgerBtn: { background: 'none', border: 'none', cursor: 'pointer', padding: 0 },
   pageTitle: { color: COLORS.textPrimary, fontSize: FONTS.sizes.h3, fontWeight: 'bold' },
-  statusBadge: { 
-    fontSize: '10px', color: COLORS.primary, border: `1px solid ${COLORS.primary}`, 
-    padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase', fontWeight: 'bold' 
-  },
-  contentArea: { flex: 1, padding: SPACING.lg, overflowX: 'hidden' }
+  statusBadge: { fontSize: '10px', color: COLORS.primary, border: `1px solid ${COLORS.primary}`, padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase', fontWeight: 'bold' },
+  // MODIFICATION : Activation du scroll vertical sur la zone de contenu
+  contentArea: { flex: 1, padding: SPACING.lg, overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }
 };
 
 export default AdminLayout;

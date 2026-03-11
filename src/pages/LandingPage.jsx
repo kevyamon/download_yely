@@ -9,7 +9,6 @@ import Layout from '../components/Layout';
 import VideosView from '../components/VideosView';
 import { useToast } from '../context/ToastContext';
 
-// Constantes pour la navigation
 const VIEWS = {
   HOME: 'HOME',
   CONTACTS: 'CONTACTS',
@@ -22,7 +21,6 @@ const LandingPage = () => {
   const [appConfig, setAppConfig] = useState({ apkUrl: '', pwaUrl: '' });
   const { showToast } = useToast();
 
-  // 1. RÉCUPÉRATION DES LIENS DYNAMIQUES DEPUIS LA BASE DE DONNÉES
   useEffect(() => {
     const fetchAppLinks = async () => {
       try {
@@ -31,53 +29,40 @@ const LandingPage = () => {
           setAppConfig(res.data);
         }
       } catch (error) {
-        console.error("Impossible de charger la configuration système:", error);
+        console.error("Impossible de charger la configuration systeme:", error);
       }
     };
     fetchAppLinks();
   }, []);
 
-  // 2. LOGIQUE DE TÉLÉCHARGEMENT ANDROID
   const handleAndroidDownload = async () => {
     try {
-      // On compte le clic en BDD pour tes stats
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/android`);
-      
-      // On utilise le lien dynamique ! Fini le .env !
       const apkUrl = appConfig.apkUrl;
-      
       if (apkUrl && apkUrl.startsWith('http')) {
         window.location.href = apkUrl;
       } else {
-        showToast("La mise à jour des serveurs est en cours. Le lien sera disponible dans quelques minutes !", "info");
+        showToast("La mise a jour des serveurs est en cours.", "info");
       }
     } catch (err) {
-      console.error("Erreur download:", err);
       showToast("Erreur de connexion au serveur.", "error");
     }
   };
 
-  // 3. LOGIQUE INSTALLATION IPHONE
   const handleIosInstall = async () => {
     try {
-      // On compte le clic iOS
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/ios`);
-      
-      // On utilise le lien PWA dynamique
       const pwaUrl = appConfig.pwaUrl;
-      
       if (pwaUrl && pwaUrl.startsWith('http')) {
         window.location.href = pwaUrl;
       } else {
-        showToast("Le tutoriel d'installation iPhone arrive bientôt !", "info");
+        showToast("Le tutoriel d'installation iPhone arrive bientot !", "info");
       }
     } catch (err) {
-      console.error("Erreur click iOS:", err);
       showToast("Erreur de connexion au serveur.", "error");
     }
   };
 
-  // Variants pour l'animation de transition entre les pages
   const pageVariants = {
     initial: { opacity: 0, x: 20 },
     in: { opacity: 1, x: 0 },
@@ -90,20 +75,18 @@ const LandingPage = () => {
     duration: 0.3
   };
 
-  // LE SECRET DU ZERO SCROLL POUR FRAMER MOTION :
-  // On s'assure que le conteneur d'animation prend toute la hauteur disponible
+  // MODIFICATION : Utilisation de minHeight au lieu de height pour liberer le scroll
   const viewStyle = { 
     display: 'flex', 
     flexDirection: 'column', 
     flex: 1, 
-    height: '100%' 
+    minHeight: '100%', 
+    width: '100%'
   };
 
   return (
     <Layout onNavigate={setCurrentView} currentView={currentView}>
-      
       <AnimatePresence mode="wait">
-        
         {currentView === VIEWS.HOME && (
           <motion.div
             key="home"
@@ -114,10 +97,7 @@ const LandingPage = () => {
             transition={pageTransition}
             style={viewStyle}
           >
-            <Hero 
-              onAndroidClick={handleAndroidDownload} 
-              onIosClick={handleIosInstall} 
-            />
+            <Hero onAndroidClick={handleAndroidDownload} onIosClick={handleIosInstall} />
           </motion.div>
         )}
 
@@ -162,7 +142,6 @@ const LandingPage = () => {
             <VideosView onBack={() => setCurrentView(VIEWS.HOME)} />
           </motion.div>
         )}
-
       </AnimatePresence>
     </Layout>
   );
