@@ -21,32 +21,36 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingPlatform, setPendingPlatform] = useState(null);
+  
   const [displayedTitle, setDisplayedTitle] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
 
   const fullTitle = "L'ELITE DU TRANSPORT.";
 
-  // Animation Typewriter avec boucle infinie de 30s
+  // Animation Typewriter avec gestion du curseur
   useEffect(() => {
     let timeoutId;
     let currentIndex = 0;
 
     const typeCharacter = () => {
+      setIsTyping(true);
       if (currentIndex < fullTitle.length) {
         setDisplayedTitle(fullTitle.substring(0, currentIndex + 1));
         currentIndex++;
         timeoutId = setTimeout(typeCharacter, 100); // 100ms par lettre
       } else {
+        setIsTyping(false); // Masque le curseur à la fin de la phrase
         timeoutId = setTimeout(() => {
           currentIndex = 0;
           setDisplayedTitle("");
           typeCharacter();
-        }, 30000); // Pause de 30 secondes avant de recommencer
+        }, 30000); // Pause de 30 secondes
       }
     };
 
     typeCharacter();
 
-    return () => clearTimeout(timeoutId); // Nettoyage de sécurité
+    return () => clearTimeout(timeoutId); // Nettoyage
   }, []);
 
   useEffect(() => {
@@ -151,13 +155,19 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
         <motion.h1 variants={itemVariants} style={styles.title}>
           {displayedTitle}
-          <motion.span
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ repeat: Infinity, duration: 0.8 }}
-            style={{ color: COLORS.primary, marginLeft: '4px' }}
-          >
-            |
-          </motion.span>
+          <AnimatePresence>
+            {isTyping && (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 1, 0] }}
+                exit={{ opacity: 0 }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+                style={{ color: COLORS.primary, marginLeft: '4px' }}
+              >
+                |
+              </motion.span>
+            )}
+          </AnimatePresence>
         </motion.h1>
         
         <motion.p variants={itemVariants} style={styles.subtitle}>
@@ -265,7 +275,7 @@ const styles = {
     color: COLORS.textPrimary, 
     marginBottom: '4px', 
     fontWeight: '800',
-    minHeight: '36px', // Évite un saut de mise en page quand le texte est vide
+    minHeight: '36px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
