@@ -7,25 +7,31 @@ const ThemeWatcher = () => {
   const [themeChanged, setThemeChanged] = useState(false);
 
   useEffect(() => {
-    // On cible la media query native du navigateur
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const handleChange = () => {
-      // Dès que le système change de thème, on déclenche l'affichage de la modale
+    const handleChange = (event) => {
+      console.log("Thème système modifié détecté. Nouveau mode sombre :", event.matches);
       setThemeChanged(true);
     };
 
-    // Écouteur d'événement moderne
-    mediaQuery.addEventListener('change', handleChange);
+    // Implémentation ultra-robuste pour compatibilité croisée (Modernes + Anciens Safari/iOS)
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+    } else if (mediaQuery.addListener) {
+      // Fallback pour les anciens navigateurs
+      mediaQuery.addListener(handleChange);
+    }
 
-    // Nettoyage impératif pour éviter les fuites de mémoire
     return () => {
-      mediaQuery.removeEventListener('change', handleChange);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleChange);
+      } else if (mediaQuery.removeListener) {
+        mediaQuery.removeListener(handleChange);
+      }
     };
   }, []);
 
   const handleRestart = () => {
-    // Recharge la page depuis le cache/serveur pour réévaluer isDark dans theme.js
     window.location.reload();
   };
 
@@ -77,7 +83,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 9999, // Extrêmement élevé pour bloquer toute interaction en dessous
+    zIndex: 9999,
     padding: SPACING.md
   },
   modal: {
@@ -107,7 +113,7 @@ const styles = {
   },
   button: {
     backgroundColor: COLORS.primary,
-    color: '#000', // Contraste maximum sur le bouton or
+    color: '#000',
     border: 'none',
     borderRadius: BORDERS.radius.pill,
     height: '48px',

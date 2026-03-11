@@ -27,7 +27,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
   const fullTitle = "L'ELITE DU TRANSPORT.";
 
-  // Animation Typewriter avec gestion du curseur
+  // Animation Typewriter avec gestion stricte du curseur
   useEffect(() => {
     let timeoutId;
     let currentIndex = 0;
@@ -39,7 +39,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         currentIndex++;
         timeoutId = setTimeout(typeCharacter, 100); // 100ms par lettre
       } else {
-        setIsTyping(false); // Masque le curseur à la fin de la phrase
+        setIsTyping(false); // Coupe brutalement l'affichage du curseur
         timeoutId = setTimeout(() => {
           currentIndex = 0;
           setDisplayedTitle("");
@@ -155,19 +155,16 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
         <motion.h1 variants={itemVariants} style={styles.title}>
           {displayedTitle}
-          <AnimatePresence>
-            {isTyping && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 1, 0] }}
-                exit={{ opacity: 0 }}
-                transition={{ repeat: Infinity, duration: 0.8 }}
-                style={{ color: COLORS.primary, marginLeft: '4px' }}
-              >
-                |
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {/* Rendu conditionnel strict, sans AnimatePresence */}
+          {isTyping && (
+            <motion.span
+              animate={{ opacity: [1, 0] }}
+              transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut", repeatType: "reverse" }}
+              style={{ color: COLORS.primary, marginLeft: '4px' }}
+            >
+              |
+            </motion.span>
+          )}
         </motion.h1>
         
         <motion.p variants={itemVariants} style={styles.subtitle}>
