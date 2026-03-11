@@ -1,121 +1,78 @@
-// src/components/ThemeWatcher.jsx
-import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
-import { BORDERS, COLORS, FONTS, GLASS, SPACING } from './theme/theme';
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
+import { ToastProvider } from './context/ToastContext';
 
-const ThemeWatcher = () => {
-  const [themeChanged, setThemeChanged] = useState(false);
+// Composants globaux
+import ThemeWatcher from './components/ThemeWatcher';
 
-  useEffect(() => {
-    // On cible la media query native du navigateur
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+// Pages Publiques
+import LandingPage from './pages/LandingPage';
 
-    const handleChange = () => {
-      // Dès que le système change de thème, on déclenche l'affichage de la modale
-      setThemeChanged(true);
-    };
+// Pages Admin
+import AdminLayout from './components/admin/AdminLayout';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminRegister from './pages/admin/AdminRegister';
+import AppLinksAdmin from './pages/admin/AppLinksAdmin';
+import ContactsAdmin from './pages/admin/ContactsAdmin';
+import DashboardHome from './pages/admin/DashboardHome';
+import FoundersAdmin from './pages/admin/FoundersAdmin';
+import VideosAdmin from './pages/admin/VideosAdmin';
 
-    // Écouteur d'événement moderne
-    mediaQuery.addEventListener('change', handleChange);
+// GARDE DU CORPS DES ROUTES ADMIN
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/darkkevythecto42" replace />;
+  }
+  return children;
+};
 
-    // Nettoyage impératif pour éviter les fuites de mémoire
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
-  }, []);
-
-  const handleRestart = () => {
-    // Recharge la page depuis le cache/serveur pour réévaluer isDark dans theme.js
-    window.location.reload();
-  };
-
+const AppRoutes = () => {
   return (
-    <AnimatePresence>
-      {themeChanged && (
-        <motion.div
-          style={styles.overlay}
-          initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-          animate={{ opacity: 1, backdropFilter: 'blur(10px)' }}
-          exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-        >
-          <motion.div
-            style={styles.modal}
-            initial={{ scale: 0.8, y: 50, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 250, damping: 20 }}
-          >
-            <h2 style={styles.title}>Mise à jour de l'affichage</h2>
-            
-            <p style={styles.text}>
-              Nous avons détecté un changement de thème sur votre appareil (Mode Clair / Sombre). 
-              Veuillez rafraîchir l'application pour appliquer les nouvelles couleurs de manière optimale.
-            </p>
-
-            <motion.button
-              style={styles.button}
-              onClick={handleRestart}
-              whileHover={{ scale: 1.02, backgroundColor: COLORS.primaryLight }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Rafraîchir maintenant
-            </motion.button>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/darkkevythecto42" element={<AdminLogin />} />
+      <Route path="/admin/setup" element={<AdminRegister />} />
+      
+      <Route 
+        path="/admin/*" 
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <Routes>
+                <Route path="/" element={<Navigate to="dashboard" replace />} />
+                <Route path="dashboard" element={<DashboardHome />} />
+                <Route path="app-links" element={<AppLinksAdmin />} />
+                <Route path="contacts" element={<ContactsAdmin />} />
+                <Route path="founders" element={<FoundersAdmin />} />
+                <Route path="videos" element={<VideosAdmin />} />
+              </Routes>
+            </AdminLayout>
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 
-const styles = {
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 9999, // Extrêmement élevé pour bloquer toute interaction en dessous
-    padding: SPACING.md
-  },
-  modal: {
-    ...GLASS.modal,
-    width: '100%',
-    maxWidth: '400px',
-    borderRadius: BORDERS.radius.xl,
-    padding: SPACING.xl,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-    border: `1px solid ${COLORS.border}`,
-    boxShadow: `0 20px 40px rgba(0,0,0,0.5)`
-  },
-  title: {
-    fontSize: FONTS.sizes.h3,
-    color: COLORS.textPrimary,
-    fontWeight: 'bold',
-    marginBottom: SPACING.md
-  },
-  text: {
-    fontSize: FONTS.sizes.bodySmall,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.xl,
-    lineHeight: 1.5
-  },
-  button: {
-    backgroundColor: COLORS.primary,
-    color: '#000', // Contraste maximum sur le bouton or
-    border: 'none',
-    borderRadius: BORDERS.radius.pill,
-    height: '48px',
-    width: '100%',
-    fontSize: FONTS.sizes.body,
-    fontWeight: 'bold',
-    cursor: 'pointer'
-  }
+const App = () => {
+  return (
+    <SocketProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <ThemeWatcher />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
+      </ToastProvider>
+    </SocketProvider>
+  );
 };
 
-export default ThemeWatcher;
+export default App;
