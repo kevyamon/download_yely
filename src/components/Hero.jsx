@@ -27,7 +27,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
   const fullTitle = "L'ELITE DU TRANSPORT.";
 
-  // Animation Typewriter avec gestion stricte du curseur
   useEffect(() => {
     let timeoutId;
     let currentIndex = 0;
@@ -37,20 +36,19 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
       if (currentIndex < fullTitle.length) {
         setDisplayedTitle(fullTitle.substring(0, currentIndex + 1));
         currentIndex++;
-        timeoutId = setTimeout(typeCharacter, 100); // 100ms par lettre
+        timeoutId = setTimeout(typeCharacter, 100);
       } else {
-        setIsTyping(false); // Coupe brutalement l'affichage du curseur
+        setIsTyping(false);
         timeoutId = setTimeout(() => {
           currentIndex = 0;
           setDisplayedTitle("");
           typeCharacter();
-        }, 30000); // Pause de 30 secondes
+        }, 30000);
       }
     };
 
     typeCharacter();
-
-    return () => clearTimeout(timeoutId); // Nettoyage
+    return () => clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
@@ -86,7 +84,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
   const confirmDownload = () => {
     setIsModalOpen(false);
-    showToast(`Préparation de l'installation pour ${pendingPlatform === 'android' ? 'Android' : 'iPhone'}...`, 'info');
+    showToast(`Preparation de l'installation pour ${pendingPlatform === 'android' ? 'Android' : 'iPhone'}...`, 'info');
     setTimeout(() => {
       if (pendingPlatform === 'android') onAndroidClick();
       else if (pendingPlatform === 'ios') onIosClick();
@@ -155,7 +153,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
         <motion.h1 variants={itemVariants} style={styles.title}>
           {displayedTitle}
-          {/* Rendu conditionnel strict, sans AnimatePresence */}
           {isTyping && (
             <motion.span
               animate={{ opacity: [1, 0] }}
@@ -168,7 +165,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         </motion.h1>
         
         <motion.p variants={itemVariants} style={styles.subtitle}>
-          Téléchargez l'application officielle Yely.
+          Telechargez l'application officielle Yely.
         </motion.p>
 
         <motion.div variants={itemVariants} style={styles.buttonContainer}>
@@ -218,7 +215,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
                 </p>
                 <div style={styles.modalDivider} />
                 <p style={styles.modalText}>
-                  <strong style={{ color: COLORS.textPrimary }}>Pour les Chauffeurs :</strong> Afin de garantir une précision GPS absolue en arrière-plan, l'application Chauffeur est <strong style={{color: COLORS.danger}}>temporairement réservée aux téléphones Android</strong>.
+                  <strong style={{ color: COLORS.textPrimary }}>Pour les Chauffeurs :</strong> Afin de garantir une precision GPS absolue en arriere-plan, l'application Chauffeur est <strong style={{color: COLORS.danger}}>temporairement reservee aux telephones Android</strong>.
                 </p>
               </div>
 
@@ -244,8 +241,8 @@ const styles = {
     flexDirection: 'column', 
     alignItems: 'center', 
     justifyContent: 'center', 
-    flex: 1, 
-    padding: '2vh 20px', 
+    minHeight: '100%', // Utilise au moins 100% de la zone centrale
+    padding: '40px 20px', // Un padding fixe pour eviter que le contenu touche les bords au scroll
     textAlign: 'center',
     width: '100%',
     boxSizing: 'border-box'
@@ -261,7 +258,8 @@ const styles = {
     justifyContent: 'center', 
     backgroundColor: COLORS.richBlack,
     border: `3px solid ${COLORS.primary}`,
-    boxShadow: `0 0 30px ${COLORS.primary}66`
+    boxShadow: `0 0 30px ${COLORS.primary}66`,
+    flexShrink: 0 // Empeche le logo de s'ecraser si l'ecran est petit
   },
   logoImage: { width: '100%', height: '100%', objectFit: 'cover' },
   logoCircle: { width: '100%', height: '100%', borderRadius: '50%', backgroundColor: COLORS.background, border: `4px solid ${COLORS.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center' },
@@ -270,22 +268,23 @@ const styles = {
   title: { 
     fontSize: FONTS.sizes.h2, 
     color: COLORS.textPrimary, 
-    marginBottom: '4px', 
+    marginBottom: '10px', 
     fontWeight: '800',
     minHeight: '36px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
   },
-  subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '3vh' }, 
+  subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '40px' }, 
 
   buttonContainer: { 
     display: 'flex', 
     flexDirection: 'row', 
+    flexWrap: 'wrap', // Permet aux boutons de passer l'un sous l'autre sur ecran tres etroit
     justifyContent: 'center',
     gap: '15px', 
     width: '100%', 
-    maxWidth: '400px' 
+    maxWidth: '450px' 
   }, 
   
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: SPACING.md },
