@@ -1,7 +1,7 @@
 // src/components/ThemeWatcher.jsx
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { BORDERS, COLORS, FONTS, GLASS, SPACING } from '../theme/theme';
+import { BORDERS, COLORS, FONTS, GLASS, SPACING } from './theme/theme';
 
 const ThemeWatcher = () => {
   const [themeChanged, setThemeChanged] = useState(false);
