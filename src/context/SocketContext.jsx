@@ -12,20 +12,25 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // On se connecte a ton serveur Render des l'ouverture du site
     const socketInstance = io(import.meta.env.VITE_SOCKET_URL, {
       transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
+      reconnection: true,
+      reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
     });
 
     socketInstance.on('connect', () => {
-      console.log('[Temps Reel] Connecte au serveur Render');
+      console.log('[Reseau] Connecte au serveur de synchronisation');
+    });
+
+    socketInstance.on('disconnect', () => {
+      console.log('[Reseau] Deconnecte, tentative de reconnexion en cours...');
     });
 
     setSocket(socketInstance);
 
-    // Quand l'utilisateur ferme la page, on coupe proprement la ligne
     return () => {
       socketInstance.disconnect();
     };

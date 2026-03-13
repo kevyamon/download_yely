@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import ContactsView from '../components/ContactsView';
 import FoundersView from '../components/FoundersView';
 import Hero from '../components/Hero';
+import IosInstallModal from '../components/IosInstallModal';
 import Layout from '../components/Layout';
 import VideosView from '../components/VideosView';
 import { useToast } from '../context/ToastContext';
@@ -19,6 +20,7 @@ const VIEWS = {
 const LandingPage = () => {
   const [currentView, setCurrentView] = useState(VIEWS.HOME);
   const [appConfig, setAppConfig] = useState({ apkUrl: '', pwaUrl: '' });
+  const [showIosModal, setShowIosModal] = useState(false);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -52,12 +54,7 @@ const LandingPage = () => {
   const handleIosInstall = async () => {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/stats/ios`);
-      const pwaUrl = appConfig.pwaUrl;
-      if (pwaUrl && pwaUrl.startsWith('http')) {
-        window.location.href = pwaUrl;
-      } else {
-        showToast("Le tutoriel d'installation iPhone arrive bientot !", "info");
-      }
+      setShowIosModal(true);
     } catch (err) {
       showToast("Erreur de connexion au serveur.", "error");
     }
@@ -75,7 +72,6 @@ const LandingPage = () => {
     duration: 0.3
   };
 
-  // MODIFICATION : Utilisation de minHeight au lieu de height pour liberer le scroll
   const viewStyle = { 
     display: 'flex', 
     flexDirection: 'column', 
@@ -142,6 +138,10 @@ const LandingPage = () => {
             <VideosView onBack={() => setCurrentView(VIEWS.HOME)} />
           </motion.div>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showIosModal && <IosInstallModal onClose={() => setShowIosModal(false)} />}
       </AnimatePresence>
     </Layout>
   );

@@ -14,10 +14,8 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   const socket = useSocket();
   const { showToast } = useToast();
   
-  const [stats, setStats] = useState(() => {
-    const cachedStats = localStorage.getItem('yely_stats');
-    return cachedStats ? JSON.parse(cachedStats) : { androidClicks: 0, iosClicks: 0 };
-  });
+  const [stats, setStats] = useState({ androidClicks: 0, iosClicks: 0 });
+  const [isLogoLoaded, setIsLogoLoaded] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingPlatform, setPendingPlatform] = useState(null);
@@ -55,14 +53,14 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
     const fetchStats = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/stats`);
-        const newStats = {
-          androidClicks: res.data?.androidClicks || 0,
-          iosClicks: res.data?.iosClicks || 0
-        };
-        setStats(newStats);
-        localStorage.setItem('yely_stats', JSON.stringify(newStats));
+        if (res.data) {
+          setStats({
+            androidClicks: res.data.androidClicks || 0,
+            iosClicks: res.data.iosClicks || 0
+          });
+        }
       } catch (err) {
-        console.error("Erreur stats:", err);
+        console.error("Erreur de recuperation des statistiques", err);
       }
     };
     fetchStats();
@@ -71,8 +69,10 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   useEffect(() => {
     if (!socket) return;
     socket.on('stats_updated', (newStats) => {
-      setStats(newStats);
-      localStorage.setItem('yely_stats', JSON.stringify(newStats));
+      setStats({
+        androidClicks: newStats.androidClicks || 0,
+        iosClicks: newStats.iosClicks || 0
+      });
     });
     return () => socket.off('stats_updated');
   }, [socket]);
@@ -84,27 +84,29 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
 
   const confirmDownload = () => {
     setIsModalOpen(false);
-    showToast(`Preparation de l'installation pour ${pendingPlatform === 'android' ? 'Android' : 'iPhone'}...`, 'info');
-    setTimeout(() => {
-      if (pendingPlatform === 'android') onAndroidClick();
-      else if (pendingPlatform === 'ios') onIosClick();
-    }, 800);
+    
+    setStats(prev => ({
+      ...prev,
+      androidClicks: pendingPlatform === 'android' ? prev.androidClicks + 1 : prev.androidClicks,
+      iosClicks: pendingPlatform === 'ios' ? prev.iosClicks + 1 : prev.iosClicks
+    }));
+
+    if (pendingPlatform === 'android') {
+      showToast("Preparation du telechargement Android...", "info");
+      setTimeout(() => onAndroidClick(), 300);
+    } else if (pendingPlatform === 'ios') {
+      setTimeout(() => onIosClick(), 300);
+    }
   };
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.1 }
-    }
+    show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.1 } }
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30, scale: 0.95 },
-    show: { 
-      opacity: 1, y: 0, scale: 1, 
-      transition: { type: 'spring', stiffness: 120, damping: 14 } 
-    }
+    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 120, damping: 14 } }
   };
 
   const pulseAndroidVariants = {
@@ -140,15 +142,22 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         animate="show"
       >
         <motion.div variants={itemVariants} style={styles.logoWrapper}>
-          <img 
+          {!isLogoLoaded && (
+            <motion.div 
+              style={styles.logoSkeleton}
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            />
+          )}
+          <motion.img 
             src={logoImg} 
             alt="Yely Logo" 
-            style={styles.logoImage} 
-            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+            style={{ ...styles.logoImage, opacity: isLogoLoaded ? 1 : 0 }} 
+            onLoad={() => setIsLogoLoaded(true)}
+            onError={(e) => { e.target.style.display = 'none'; setIsLogoLoaded(true); }}
+            animate={{ opacity: isLogoLoaded ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
           />
-          <div style={{...styles.logoCircle, display: 'none'}}>
-            <span style={styles.logoY}>Y</span>
-          </div>
         </motion.div>
 
         <motion.h1 variants={itemVariants} style={styles.title}>
@@ -241,8 +250,8 @@ const styles = {
     flexDirection: 'column', 
     alignItems: 'center', 
     justifyContent: 'center', 
-    minHeight: '100%', // Utilise au moins 100% de la zone centrale
-    padding: '40px 20px', // Un padding fixe pour eviter que le contenu touche les bords au scroll
+    minHeight: '100%',
+    padding: '40px 20px',
     textAlign: 'center',
     width: '100%',
     boxSizing: 'border-box'
@@ -259,11 +268,16 @@ const styles = {
     backgroundColor: COLORS.richBlack,
     border: `3px solid ${COLORS.primary}`,
     boxShadow: `0 0 30px ${COLORS.primary}66`,
-    flexShrink: 0 // Empeche le logo de s'ecraser si l'ecran est petit
+    flexShrink: 0,
+    position: 'relative'
   },
-  logoImage: { width: '100%', height: '100%', objectFit: 'cover' },
-  logoCircle: { width: '100%', height: '100%', borderRadius: '50%', backgroundColor: COLORS.background, border: `4px solid ${COLORS.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  logoY: { fontSize: '32px', fontWeight: '900', color: COLORS.primary },
+  logoSkeleton: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: COLORS.border,
+    borderRadius: '50%'
+  },
+  logoImage: { width: '100%', height: '100%', objectFit: 'cover', position: 'relative', zIndex: 2 },
   
   title: { 
     fontSize: FONTS.sizes.h2, 
@@ -280,7 +294,7 @@ const styles = {
   buttonContainer: { 
     display: 'flex', 
     flexDirection: 'row', 
-    flexWrap: 'wrap', // Permet aux boutons de passer l'un sous l'autre sur ecran tres etroit
+    flexWrap: 'wrap',
     justifyContent: 'center',
     gap: '15px', 
     width: '100%', 
