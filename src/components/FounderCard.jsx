@@ -19,8 +19,9 @@ const FounderCard = ({ founder, variants }) => {
       style={styles.card}
       variants={variants}
       whileHover={{ y: -5, boxShadow: SHADOWS.gold.boxShadow }}
+      layout // Permet a Framer Motion d'animer l'agrandissement de la carte automatiquement
     >
-      <div style={styles.headerBackground}>
+      <div style={styles.imageSection}>
         <div style={styles.imageWrapper}>
           {founder.imageUrl ? (
             <img 
@@ -42,9 +43,12 @@ const FounderCard = ({ founder, variants }) => {
         <p style={styles.role}>{founder.role}</p>
         <div style={styles.divider} />
         
-        <div style={isExpanded ? styles.storyExpanded : styles.storyCollapsed}>
+        <motion.div 
+          style={isExpanded ? styles.storyExpanded : styles.storyCollapsed}
+          layout // Anime le texte qui se deroule
+        >
           <p style={styles.story}>{founder.description}</p>
-        </div>
+        </motion.div>
         
         {founder.description && founder.description.length > 100 && (
           <button onClick={toggleReadMore} style={styles.readMoreButton}>
@@ -62,24 +66,23 @@ const styles = {
     ...SHADOWS.soft,
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center', // Centre tout le contenu de la carte
     overflow: 'hidden',
     transition: 'all 0.3s ease',
-    position: 'relative',
-    marginTop: '70px',
-    minHeight: '380px', // Agrandissement global de la carte
+    marginTop: '20px', // Plus besoin d'une grosse marge vu que l'image ne depasse plus
+    minHeight: '350px', 
   },
-  headerBackground: {
+  imageSection: {
     width: '100%',
-    height: '100px', // Bandeau un peu plus large
-    backgroundColor: 'rgba(212, 175, 55, 0.1)',
-    position: 'relative',
+    paddingTop: SPACING.xl,
+    paddingBottom: SPACING.lg,
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(212, 175, 55, 0.05)', // Fond legerement dore pour separer l'image du texte
   },
   imageWrapper: {
-    position: 'absolute',
-    top: '-70px', // On remonte le cercle pour l'adapter a sa nouvelle taille
-    width: '140px', // Cercle beaucoup plus grand (avant 100px)
+    width: '140px',
     height: '140px',
     borderRadius: BORDERS.radius.circle,
     padding: '6px',
@@ -90,7 +93,7 @@ const styles = {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-    objectPosition: 'center top', // Astuce : on se concentre sur le haut de l'image (le visage)
+    objectPosition: 'center top', 
     borderRadius: BORDERS.radius.circle,
   },
   placeholderImage: {
@@ -109,12 +112,12 @@ const styles = {
   },
   infoContainer: {
     padding: SPACING.xl,
-    paddingTop: '80px', // On pousse le texte vers le bas pour ne pas toucher la grande image
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     textAlign: 'center',
     flex: 1,
+    width: '100%'
   },
   name: {
     fontSize: FONTS.sizes.h3,
@@ -138,10 +141,10 @@ const styles = {
   },
   storyCollapsed: {
     display: '-webkit-box',
-    WebkitLineClamp: 3,
+    WebkitLineClamp: 3, // Bloque a 3 lignes precisement
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
-    textOverflow: 'ellipsis',
+    textOverflow: 'ellipsis', // Ajoute les "..." a la fin
   },
   storyExpanded: {
     display: 'block',
@@ -150,6 +153,7 @@ const styles = {
     fontSize: FONTS.sizes.body,
     color: COLORS.textSecondary,
     lineHeight: FONTS.lineHeights.relaxed,
+    margin: 0,
   },
   readMoreButton: {
     marginTop: SPACING.md,
