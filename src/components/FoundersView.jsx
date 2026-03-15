@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { COLORS, FONTS, SPACING } from '../theme/theme';
 import FounderCard from './FounderCard';
+import Loader from './Loader';
 
 const FoundersView = ({ onBack }) => {
   const [founders, setFounders] = useState([]);
@@ -19,7 +20,7 @@ const FoundersView = ({ onBack }) => {
       const dataList = res.data?.data || res.data;
       setFounders(Array.isArray(dataList) ? dataList : []);
     } catch (err) {
-      console.error("Erreur récupération fondateurs:", err);
+      console.error("Erreur recuperation fondateurs:", err);
     } finally {
       setIsLoading(false);
     }
@@ -29,7 +30,6 @@ const FoundersView = ({ onBack }) => {
     fetchFounders();
   }, []);
 
-  // MISE A JOUR TEMPS REEL (SOCKET)
   useEffect(() => {
     if (!socket) return;
     socket.on('founders_updated', fetchFounders);
@@ -64,17 +64,17 @@ const FoundersView = ({ onBack }) => {
           animate={{ opacity: 1, y: 0 }}
           style={styles.titleSection}
         >
-          <h2 style={styles.title}>L'Équipe Yely</h2>
-          <p style={styles.subtitle}>Découvrez les visionnaires derrière la révolution du transport.</p>
+          <h2 style={styles.title}>L'Equipe Yely</h2>
+          <p style={styles.subtitle}>Decouvrez les visionnaires derriere la revolution du transport.</p>
         </motion.div>
 
         {isLoading ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Chargement des profils...</p>
+            <Loader message="Chargement des profils..." />
           </div>
         ) : founders.length === 0 ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Les profils seront dévoilés très prochainement.</p>
+            <p style={{ color: COLORS.textSecondary }}>Les profils seront devoiles tres prochainement.</p>
           </div>
         ) : (
           <motion.div 

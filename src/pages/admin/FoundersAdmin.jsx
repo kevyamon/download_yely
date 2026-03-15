@@ -43,12 +43,13 @@ const FoundersAdmin = () => {
 
   const openModal = (founder = null) => {
     if (founder) {
-      setEditingId(founder._id);
+      setEditingId(founder._id || founder.id);
+      // Rétrocompatibilité : on récupère description/imageUrl OU story/imageFilename si ce sont de vieilles données
       setFormData({ 
         name: founder.name || '', 
         role: founder.role || '', 
-        description: founder.description || '',
-        imageUrl: founder.imageUrl || '',
+        description: founder.description || founder.story || '',
+        imageUrl: founder.imageUrl || founder.imageFilename || '',
         displayOrder: founder.displayOrder || 0 
       });
     } else {
@@ -87,7 +88,12 @@ const FoundersAdmin = () => {
     }
   };
 
-  // Composant Skeleton pour le chargement
+  const getValidImageUrl = (urlOrFilename) => {
+    if (!urlOrFilename) return null;
+    if (urlOrFilename.startsWith('http')) return urlOrFilename;
+    return `${import.meta.env.VITE_API_URL}/uploads/${urlOrFilename}`;
+  };
+
   const FounderSkeleton = () => (
     <div style={{ ...styles.card, border: 'none' }}>
       <div className="skeleton-shimmer" style={{ width: '100%', height: '160px' }} />
@@ -117,7 +123,6 @@ const FoundersAdmin = () => {
         </motion.button>
       </div>
 
-      {/* LISTE DES FONDATEURS AVEC SKELETONS */}
       {isLoading ? (
         <div style={styles.grid}>
           {[1, 2, 3].map((n) => <FounderSkeleton key={n} />)}
@@ -126,43 +131,54 @@ const FoundersAdmin = () => {
         <div style={styles.emptyState}>L'équipe est vide. Cliquez sur "Nouveau Profil" pour présenter un fondateur.</div>
       ) : (
         <div style={styles.grid}>
-          {founders.map((founder) => (
-            <motion.div 
-              key={founder._id} 
-              style={styles.card}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-            >
-              <div style={styles.imageContainer}>
-                {founder.imageUrl ? (
-                  <img src={founder.imageUrl} alt={founder.name} style={styles.profileImage} />
-                ) : (
-                  <div style={styles.placeholderImage}>{founder.name?.charAt(0) || 'Y'}</div>
-                )}
-              </div>
-              
-              <div style={styles.cardContent}>
-                <h3 style={styles.name}>{founder.name}</h3>
-                <p style={styles.role}>{founder.role}</p>
-                <p style={styles.description}>
-                  {founder.description?.length > 80 ? founder.description.substring(0, 80) + '...' : founder.description}
-                </p>
-              </div>
+          {founders.map((founder) => {
+            // Utilisation de la fonction sécurisée pour l'image
+            const validImage = getValidImageUrl(founder.imageUrl || founder.imageFilename);
+            // Sécurité pour la description
+            const validDesc = founder.description || founder.story || '';
 
-              <div style={styles.cardActions}>
-                <button onClick={() => openModal(founder)} style={styles.iconBtn}>
-                  <Edit2 size={18} color={COLORS.primary} />
-                </button>
-                <button onClick={() => handleDelete(founder._id)} style={styles.iconBtnDanger}>
-                  <Trash2 size={18} color={COLORS.danger} />
-                </button>
-              </div>
-            </motion.div>
-          ))}
+            return (
+              <motion.div 
+                key={founder._id || founder.id} 
+                style={styles.card}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+              >
+                <div style={styles.imageContainer}>
+                  {validImage ? (
+                    <img 
+                      src={validImage} 
+                      alt={founder.name} 
+                      style={styles.profileImage} 
+                      onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=YELY'; }}
+                    />
+                  ) : (
+                    <div style={styles.placeholderImage}>{founder.name?.charAt(0) || 'Y'}</div>
+                  )}
+                </div>
+                
+                <div style={styles.cardContent}>
+                  <h3 style={styles.name}>{founder.name}</h3>
+                  <p style={styles.role}>{founder.role}</p>
+                  <p style={styles.description}>
+                    {validDesc.length > 80 ? validDesc.substring(0, 80) + '...' : validDesc}
+                  </p>
+                </div>
+
+                <div style={styles.cardActions}>
+                  <button onClick={() => openModal(founder)} style={styles.iconBtn}>
+                    <Edit2 size={18} color={COLORS.primary} />
+                  </button>
+                  <button onClick={() => handleDelete(founder._id || founder.id)} style={styles.iconBtnDanger}>
+                    <Trash2 size={18} color={COLORS.danger} />
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       )}
 
-      {/* MODALE D'AJOUT / ÉDITION */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div 

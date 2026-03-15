@@ -4,9 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, BORDERS, GLASS } from '../theme/theme';
 
-// Tu pourras remplacer ces liens par tes vrais liens Cloudinary
 const SCREENSHOTS = [
-  "https://res.cloudinary.com/dcrdkr4nw/image/upload/v1773604249/photo_9_2026-03-15_19-47-52_luvzjn.jpg",
+   "https://res.cloudinary.com/dcrdkr4nw/image/upload/v1773604249/photo_9_2026-03-15_19-47-52_luvzjn.jpg",
  "https://res.cloudinary.com/dcrdkr4nw/image/upload/v1773604248/photo_8_2026-03-15_19-47-52_crtazk.jpg",
 "https://res.cloudinary.com/dcrdkr4nw/image/upload/v1773604238/photo_7_2026-03-15_19-47-52_jeqoir.jpg",
 "https://res.cloudinary.com/dcrdkr4nw/image/upload/v1773604238/photo_5_2026-03-15_19-47-52_p5unxn.jpg",
@@ -28,7 +27,6 @@ const SCREENSHOTS = [
 const AppScreenshots = () => {
   const [selectedImg, setSelectedImg] = useState(null);
 
-  // Animation qui simule le défilement continu
   const marqueeVariants = {
     animate: {
       x: [0, -1000],
@@ -50,10 +48,8 @@ const AppScreenshots = () => {
           style={styles.carouselTrack}
           variants={marqueeVariants}
           animate="animate"
-          // Pause l'animation quand on survole avec la souris
           whileHover={{ animationPlayState: "paused" }} 
         >
-          {/* On double la liste pour créer l'effet infini */}
           {[...SCREENSHOTS, ...SCREENSHOTS].map((src, index) => (
             <motion.div 
               key={index} 
@@ -108,7 +104,6 @@ const styles = {
     maxWidth: '600px',
     overflow: 'hidden',
     position: 'relative',
-    // Masques dégradés sur les côtés pour faire fondre les images
     WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
     maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
   },
@@ -139,30 +134,34 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 9999
+    zIndex: 9999,
+    padding: '20px' /* Ajout de marges pour eviter de toucher les bords */
   },
   modalContent: {
     position: 'relative',
     maxWidth: '90%',
-    maxHeight: '90vh',
+    maxHeight: '80vh', /* Reduction de la hauteur max pour eviter le Header */
     borderRadius: BORDERS.radius.xl,
     overflow: 'hidden',
-    border: `1px solid ${COLORS.primary}`
+    border: `1px solid ${COLORS.primary}`,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   modalImage: {
     width: '100%',
     height: '100%',
-    maxHeight: '85vh',
-    objectFit: 'contain'
+    maxHeight: '75vh',
+    objectFit: 'contain' /* Garde les proportions de l'image sans la couper */
   },
   closeBtn: {
     position: 'absolute',
-    top: '15px',
-    right: '15px',
+    top: '10px',
+    right: '10px',
     backgroundColor: COLORS.danger,
     border: 'none',
     borderRadius: '50%',

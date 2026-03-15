@@ -43,8 +43,8 @@ const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    position: 'relative',
-    zIndex: 1,
+    // Suppression totale du zIndex, position relative et overflow local
+    // Cela permet au modal plein ecran de passer par-dessus le header
   },
   footer: {
     padding: '12px 24px',

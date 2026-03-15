@@ -6,9 +6,10 @@ import { BORDERS, COLORS, FONTS, GLASS, SHADOWS, SPACING } from '../theme/theme'
 const FounderCard = ({ founder, variants }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const imageUrl = founder.imageFilename?.startsWith('http') 
-    ? founder.imageFilename 
-    : `${import.meta.env.VITE_API_URL}/uploads/${founder.imageFilename}`;
+  // Correction profonde : utilisation de imageUrl au lieu de imageFilename selon la BDD
+  const imageUrl = founder.imageUrl?.startsWith('http') 
+    ? founder.imageUrl 
+    : `${import.meta.env.VITE_API_URL}/uploads/${founder.imageUrl}`;
 
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
@@ -22,7 +23,7 @@ const FounderCard = ({ founder, variants }) => {
     >
       <div style={styles.headerBackground}>
         <div style={styles.imageWrapper}>
-          {founder.imageFilename ? (
+          {founder.imageUrl ? (
             <img 
               src={imageUrl} 
               alt={founder.name} 
@@ -31,7 +32,7 @@ const FounderCard = ({ founder, variants }) => {
             />
           ) : (
             <div style={styles.placeholderImage}>
-              <span style={styles.placeholderText}>{founder.name.charAt(0)}</span>
+              <span style={styles.placeholderText}>{founder.name ? founder.name.charAt(0) : 'Y'}</span>
             </div>
           )}
         </div>
@@ -43,10 +44,11 @@ const FounderCard = ({ founder, variants }) => {
         <div style={styles.divider} />
         
         <div style={isExpanded ? styles.storyExpanded : styles.storyCollapsed}>
-          <p style={styles.story}>{founder.story}</p>
+          {/* Correction profonde : utilisation de description au lieu de story selon la BDD */}
+          <p style={styles.story}>{founder.description}</p>
         </div>
         
-        {founder.story && founder.story.length > 100 && (
+        {founder.description && founder.description.length > 100 && (
           <button onClick={toggleReadMore} style={styles.readMoreButton}>
             {isExpanded ? "Voir moins" : "Lire plus"}
           </button>

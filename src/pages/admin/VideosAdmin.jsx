@@ -10,7 +10,6 @@ const VideosAdmin = () => {
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Gestion de la modale
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   
@@ -43,7 +42,7 @@ const VideosAdmin = () => {
 
   const openModal = (video = null) => {
     if (video) {
-      setEditingId(video._id);
+      setEditingId(video._id || video.id);
       setFormData({ 
         title: video.title || '', 
         description: video.description || '', 
@@ -95,7 +94,6 @@ const VideosAdmin = () => {
       : null;
   };
 
-  // Composant Skeleton pour le chargement
   const VideoSkeleton = () => (
     <div style={{ ...styles.card, border: 'none' }}>
       <div className="skeleton-shimmer" style={{ width: '100%', aspectRatio: '16/9' }} />
@@ -128,7 +126,6 @@ const VideosAdmin = () => {
         </motion.button>
       </div>
 
-      {/* LISTE DES VIDÉOS AVEC SKELETONS */}
       {isLoading ? (
         <div style={styles.grid}>
           {[1, 2, 3].map((n) => <VideoSkeleton key={n} />)}
@@ -142,14 +139,19 @@ const VideosAdmin = () => {
             
             return (
               <motion.div 
-                key={video._id} 
+                key={video._id || video.id} 
                 style={styles.card}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
               >
                 <div style={styles.videoThumbnail}>
                   {thumbnailUrl ? (
-                    <img src={thumbnailUrl} alt="Miniature" style={styles.thumbnailImg} />
+                    <img 
+                      src={thumbnailUrl} 
+                      alt="Miniature" 
+                      style={styles.thumbnailImg} 
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
                   ) : (
                     <div style={styles.placeholderThumbnail}>
                       <PlayCircle size={40} color={COLORS.primary} />
@@ -168,7 +170,7 @@ const VideosAdmin = () => {
                   <button onClick={() => openModal(video)} style={styles.iconBtn}>
                     <Edit2 size={18} color={COLORS.primary} />
                   </button>
-                  <button onClick={() => handleDelete(video._id)} style={styles.iconBtnDanger}>
+                  <button onClick={() => handleDelete(video._id || video.id)} style={styles.iconBtnDanger}>
                     <Trash2 size={18} color={COLORS.danger} />
                   </button>
                 </div>
@@ -178,7 +180,6 @@ const VideosAdmin = () => {
         </div>
       )}
 
-      {/* MODALE D'AJOUT / ÉDITION */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div 

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { COLORS, FONTS, SPACING } from '../theme/theme';
 import ContactCard from './ContactCard';
+import Loader from './Loader';
 
 const ContactsView = ({ onBack }) => {
   const [contacts, setContacts] = useState([]);
@@ -19,7 +20,7 @@ const ContactsView = ({ onBack }) => {
       const dataList = res.data?.data || res.data;
       setContacts(Array.isArray(dataList) ? dataList : []);
     } catch (err) {
-      console.error("Erreur récupération contacts:", err);
+      console.error("Erreur recuperation contacts:", err);
     } finally {
       setIsLoading(false);
     }
@@ -29,14 +30,12 @@ const ContactsView = ({ onBack }) => {
     fetchContacts();
   }, []);
 
-  // MISE A JOUR TEMPS REEL (SOCKET)
   useEffect(() => {
     if (!socket) return;
     socket.on('contacts_updated', fetchContacts);
     return () => socket.off('contacts_updated');
   }, [socket]);
 
-  // Animation de conteneur en cascade (Stagger)
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -66,12 +65,12 @@ const ContactsView = ({ onBack }) => {
           style={styles.titleSection}
         >
           <h2 style={styles.title}>Assistance 24/7</h2>
-          <p style={styles.subtitle}>Notre équipe est à votre disposition sur les plateformes suivantes.</p>
+          <p style={styles.subtitle}>Notre equipe est a votre disposition sur les plateformes suivantes.</p>
         </motion.div>
 
         {isLoading ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Connexion sécurisée en cours...</p>
+            <Loader message="Connexion securisee en cours..." />
           </div>
         ) : contacts.length === 0 ? (
           <div style={styles.loadingState}>

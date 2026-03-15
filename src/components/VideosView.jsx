@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { COLORS, FONTS, SPACING } from '../theme/theme';
 import VideoCard from './VideoCard';
+import Loader from './Loader';
 
 const VideosView = ({ onBack }) => {
   const [videos, setVideos] = useState([]);
@@ -19,7 +20,7 @@ const VideosView = ({ onBack }) => {
       const dataList = res.data?.data || res.data;
       setVideos(Array.isArray(dataList) ? dataList : []);
     } catch (err) {
-      console.error("Erreur récupération vidéos:", err);
+      console.error("Erreur recuperation videos:", err);
     } finally {
       setIsLoading(false);
     }
@@ -29,7 +30,6 @@ const VideosView = ({ onBack }) => {
     fetchVideos();
   }, []);
 
-  // MISE A JOUR TEMPS REEL (SOCKET)
   useEffect(() => {
     if (!socket) return;
     socket.on('videos_updated', fetchVideos);
@@ -61,17 +61,17 @@ const VideosView = ({ onBack }) => {
           animate={{ opacity: 1, y: 0 }}
           style={styles.titleSection}
         >
-          <h2 style={styles.title}>Découvrez Yely</h2>
-          <p style={styles.subtitle}>Tutoriels et présentations de notre écosystème.</p>
+          <h2 style={styles.title}>Decouvrez Yely</h2>
+          <p style={styles.subtitle}>Tutoriels et presentations de notre ecosysteme.</p>
         </motion.div>
 
         {isLoading ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Chargement des médias...</p>
+            <Loader message="Chargement des medias..." />
           </div>
         ) : videos.length === 0 ? (
           <div style={styles.loadingState}>
-            <p style={{ color: COLORS.textSecondary }}>Aucune vidéo disponible pour le moment.</p>
+            <p style={{ color: COLORS.textSecondary }}>Aucune video disponible pour le moment.</p>
           </div>
         ) : (
           <motion.div 
