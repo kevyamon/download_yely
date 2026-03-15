@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { COLORS } from '../theme/theme';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import ScrollToTop from './ScrollToTop';
 
 const Layout = ({ children, onNavigate, currentView }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -25,14 +26,15 @@ const Layout = ({ children, onNavigate, currentView }) => {
       <footer style={styles.footer}>
         <p style={styles.footerText}>© {new Date().getFullYear()} Yely. Tous droits reserves.</p>
       </footer>
+      
+      <ScrollToTop />
     </div>
   );
 };
 
 const styles = {
   container: {
-    height: '100dvh',
-    overflow: 'hidden', // On garde hidden ici pour fixer le Header/Footer
+    minHeight: '100vh',
     backgroundColor: COLORS.background,
     display: 'flex',
     flexDirection: 'column',
@@ -43,15 +45,12 @@ const styles = {
     flexDirection: 'column',
     position: 'relative',
     zIndex: 1,
-    overflowY: 'auto', // Autorise le scroll vertical uniquement ici
-    overflowX: 'hidden',
-    WebkitOverflowScrolling: 'touch', // Scroll fluide sur iOS
   },
   footer: {
     padding: '12px 24px',
     textAlign: 'center',
     borderTop: `1px solid ${COLORS.border}`,
-    backgroundColor: COLORS.background, // Assure que le footer est opaque pendant le scroll
+    backgroundColor: COLORS.background,
   },
   footerText: {
     color: COLORS.textTertiary,

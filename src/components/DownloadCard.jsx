@@ -21,9 +21,11 @@ const DownloadCard = ({ platform, clicks, onClick, pulseVariants }) => {
   const borderColor = isAndroid ? COLORS.borderActive : COLORS.border;
   const iconColor = isAndroid ? COLORS.primary : COLORS.textPrimary;
   const subtitleColor = isAndroid ? COLORS.primary : COLORS.textSecondary;
-  const title = isAndroid ? "Télécharger" : "Installer";
+  const title = isAndroid ? "Telecharger" : "Installer";
   const subtitle = isAndroid ? "pour Android" : "pour iPhone";
-  const statLabel = isAndroid ? "téléchargements" : "installations";
+  const statLabel = isAndroid ? "telechargements" : "installations";
+
+  const isLoading = clicks === null || clicks === undefined;
 
   return (
     <div style={styles.btnWrapper}>
@@ -46,9 +48,18 @@ const DownloadCard = ({ platform, clicks, onClick, pulseVariants }) => {
         </div>
       </motion.button>
       
-      {/* Nouveau design des statistiques Glassmorphism */}
       <div style={styles.statsBadge}>
-        <span style={styles.statsNumber}>{clicks}</span>
+        {isLoading ? (
+          <div style={styles.skeletonBox}>
+            <motion.div
+              style={styles.skeletonSnake}
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+            />
+          </div>
+        ) : (
+          <span style={styles.statsNumber}>{clicks}</span>
+        )}
         <span style={styles.statsLabel}>{statLabel}</span>
       </div>
     </div>
@@ -75,7 +86,8 @@ const styles = {
     justifyContent: 'center',
     padding: '10px', 
     cursor: 'pointer', 
-    borderRadius: '16px' 
+    borderRadius: '16px',
+    border: `1px solid ${COLORS.border}`
   },
   btnContent: { 
     display: 'flex', 
@@ -114,7 +126,8 @@ const styles = {
     gap: '6px',
     padding: '6px 14px',
     borderRadius: '20px',
-    border: `1px solid rgba(212, 175, 55, 0.3)`
+    border: `1px solid rgba(212, 175, 55, 0.3)`,
+    minHeight: '28px'
   },
   statsNumber: {
     color: COLORS.primary,
@@ -127,6 +140,24 @@ const styles = {
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     fontWeight: FONTS.weights.semiBold
+  },
+  skeletonBox: {
+    width: '30px',
+    height: '14px',
+    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+    borderRadius: '4px',
+    overflow: 'hidden',
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  skeletonSnake: {
+    width: '50%',
+    height: '100%',
+    background: `linear-gradient(90deg, transparent, ${COLORS.primary}, transparent)`,
+    position: 'absolute',
+    left: 0,
+    top: 0
   }
 };
 

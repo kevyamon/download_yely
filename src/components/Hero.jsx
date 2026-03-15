@@ -1,11 +1,12 @@
 // src/components/Hero.jsx
 import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, X } from 'lucide-react';
+import { AlertCircle, ChevronDown, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useToast } from '../context/ToastContext';
 import { BORDERS, COLORS, FONTS, GLASS, SPACING } from '../theme/theme';
+import AppScreenshots from './AppScreenshots';
 import DownloadCard from './DownloadCard';
 
 import logoImg from '../assets/logo.png';
@@ -14,7 +15,8 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   const socket = useSocket();
   const { showToast } = useToast();
   
-  const [stats, setStats] = useState({ androidClicks: 0, iosClicks: 0 });
+  // On initialise à null pour que le composant enfant sache qu'on charge
+  const [stats, setStats] = useState({ androidClicks: null, iosClicks: null });
   const [isLogoLoaded, setIsLogoLoaded] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,6 +63,8 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         }
       } catch (err) {
         console.error("Erreur de recuperation des statistiques", err);
+        // Si erreur, on met 0 pour arreter le chargement infini
+        setStats({ androidClicks: 0, iosClicks: 0 });
       }
     };
     fetchStats();
@@ -87,8 +91,8 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
     
     setStats(prev => ({
       ...prev,
-      androidClicks: pendingPlatform === 'android' ? prev.androidClicks + 1 : prev.androidClicks,
-      iosClicks: pendingPlatform === 'ios' ? prev.iosClicks + 1 : prev.iosClicks
+      androidClicks: pendingPlatform === 'android' ? (prev.androidClicks || 0) + 1 : prev.androidClicks,
+      iosClicks: pendingPlatform === 'ios' ? (prev.iosClicks || 0) + 1 : prev.iosClicks
     }));
 
     if (pendingPlatform === 'android') {
@@ -177,6 +181,11 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
           Telechargez l'application officielle Yely.
         </motion.p>
 
+        {/* Integration du Carousel ici */}
+        <motion.div variants={itemVariants} style={{ width: '100%' }}>
+          <AppScreenshots />
+        </motion.div>
+
         <motion.div variants={itemVariants} style={styles.buttonContainer}>
           <DownloadCard 
             platform="android"
@@ -191,6 +200,17 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
             pulseVariants={pulseIosVariants}
           />
         </motion.div>
+
+        {/* Indicateur pour scroller vers le bas */}
+        <motion.div 
+          style={styles.scrollIndicator}
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+        >
+          <span style={styles.scrollText}>Decouvrir plus</span>
+          <ChevronDown color={COLORS.primary} size={24} />
+        </motion.div>
+
       </motion.div>
 
       <AnimatePresence>
@@ -254,7 +274,8 @@ const styles = {
     padding: '40px 20px',
     textAlign: 'center',
     width: '100%',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    position: 'relative' // Ajoute pour l'indicateur de scroll
   },
   logoWrapper: { 
     marginBottom: '2vh', 
@@ -289,7 +310,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center'
   },
-  subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '40px' }, 
+  subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '20px' }, 
 
   buttonContainer: { 
     display: 'flex', 
@@ -298,8 +319,24 @@ const styles = {
     justifyContent: 'center',
     gap: '15px', 
     width: '100%', 
-    maxWidth: '450px' 
+    maxWidth: '450px',
+    marginTop: '20px',
+    marginBottom: '80px' // Laisse de l'espace pour l'indicateur
   }, 
+
+  scrollIndicator: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: '20px',
+    opacity: 0.7
+  },
+  scrollText: {
+    fontSize: '12px',
+    color: COLORS.textSecondary,
+    marginBottom: '5px'
+  },
   
   modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: SPACING.md },
   modalContent: { ...GLASS.modal, width: '100%', maxWidth: '380px', maxHeight: '90vh', overflowY: 'auto', borderRadius: BORDERS.radius.xl, padding: SPACING.lg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', border: `1px solid ${COLORS.border}`, boxShadow: `0 20px 40px rgba(0,0,0,0.5)` },

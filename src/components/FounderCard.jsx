@@ -1,13 +1,18 @@
 // src/components/FounderCard.jsx
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import React from 'react';
 import { BORDERS, COLORS, FONTS, GLASS, SHADOWS, SPACING } from '../theme/theme';
 
 const FounderCard = ({ founder, variants }) => {
-  // Construction de l'URL de l'image (À adapter si tu utilises Cloudinary ou un dossier static)
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const imageUrl = founder.imageFilename?.startsWith('http') 
     ? founder.imageFilename 
     : `${import.meta.env.VITE_API_URL}/uploads/${founder.imageFilename}`;
+
+  const toggleReadMore = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   return (
     <motion.div
@@ -15,26 +20,37 @@ const FounderCard = ({ founder, variants }) => {
       variants={variants}
       whileHover={{ y: -5, boxShadow: SHADOWS.gold.boxShadow }}
     >
-      <div style={styles.imageContainer}>
-        {founder.imageFilename ? (
-          <img 
-            src={imageUrl} 
-            alt={founder.name} 
-            style={styles.image}
-            onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=YELY'; }}
-          />
-        ) : (
-          <div style={styles.placeholderImage}>
-            <span style={styles.placeholderText}>{founder.name.charAt(0)}</span>
-          </div>
-        )}
+      <div style={styles.headerBackground}>
+        <div style={styles.imageWrapper}>
+          {founder.imageFilename ? (
+            <img 
+              src={imageUrl} 
+              alt={founder.name} 
+              style={styles.image}
+              onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=YELY'; }}
+            />
+          ) : (
+            <div style={styles.placeholderImage}>
+              <span style={styles.placeholderText}>{founder.name.charAt(0)}</span>
+            </div>
+          )}
+        </div>
       </div>
       
       <div style={styles.infoContainer}>
         <h3 style={styles.name}>{founder.name}</h3>
         <p style={styles.role}>{founder.role}</p>
         <div style={styles.divider} />
-        <p style={styles.story}>{founder.story}</p>
+        
+        <div style={isExpanded ? styles.storyExpanded : styles.storyCollapsed}>
+          <p style={styles.story}>{founder.story}</p>
+        </div>
+        
+        {founder.story && founder.story.length > 100 && (
+          <button onClick={toggleReadMore} style={styles.readMoreButton}>
+            {isExpanded ? "Voir moins" : "Lire plus"}
+          </button>
+        )}
       </div>
     </motion.div>
   );
@@ -48,17 +64,32 @@ const styles = {
     flexDirection: 'column',
     overflow: 'hidden',
     transition: 'all 0.3s ease',
+    position: 'relative',
+    marginTop: '50px',
   },
-  imageContainer: {
+  headerBackground: {
     width: '100%',
-    height: '250px',
+    height: '80px',
     backgroundColor: 'rgba(212, 175, 55, 0.1)',
     position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  imageWrapper: {
+    position: 'absolute',
+    top: '-50px',
+    width: '100px',
+    height: '100px',
+    borderRadius: BORDERS.radius.circle,
+    padding: '4px',
+    backgroundColor: COLORS.background,
+    ...SHADOWS.medium,
   },
   image: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+    borderRadius: BORDERS.radius.circle,
   },
   placeholderImage: {
     width: '100%',
@@ -67,16 +98,20 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.charcoal,
+    borderRadius: BORDERS.radius.circle,
   },
   placeholderText: {
-    fontSize: '64px',
+    fontSize: '40px',
     color: COLORS.primary,
     fontWeight: 'bold',
   },
   infoContainer: {
     padding: SPACING.xl,
+    paddingTop: '60px',
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
     flex: 1,
   },
   name: {
@@ -99,10 +134,30 @@ const styles = {
     backgroundColor: COLORS.primary,
     marginBottom: SPACING.md,
   },
+  storyCollapsed: {
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  storyExpanded: {
+    display: 'block',
+  },
   story: {
     fontSize: FONTS.sizes.body,
     color: COLORS.textSecondary,
     lineHeight: FONTS.lineHeights.relaxed,
+  },
+  readMoreButton: {
+    marginTop: SPACING.md,
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: COLORS.primary,
+    fontWeight: FONTS.weights.bold,
+    cursor: 'pointer',
+    fontSize: FONTS.sizes.bodySmall,
+    padding: '5px 10px',
   }
 };
 
