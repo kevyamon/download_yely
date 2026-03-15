@@ -6,7 +6,6 @@ import { BORDERS, COLORS, FONTS, GLASS, SHADOWS, SPACING } from '../theme/theme'
 const FounderCard = ({ founder, variants }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Correction profonde : utilisation de imageUrl au lieu de imageFilename selon la BDD
   const imageUrl = founder.imageUrl?.startsWith('http') 
     ? founder.imageUrl 
     : `${import.meta.env.VITE_API_URL}/uploads/${founder.imageUrl}`;
@@ -44,7 +43,6 @@ const FounderCard = ({ founder, variants }) => {
         <div style={styles.divider} />
         
         <div style={isExpanded ? styles.storyExpanded : styles.storyCollapsed}>
-          {/* Correction profonde : utilisation de description au lieu de story selon la BDD */}
           <p style={styles.story}>{founder.description}</p>
         </div>
         
@@ -67,11 +65,12 @@ const styles = {
     overflow: 'hidden',
     transition: 'all 0.3s ease',
     position: 'relative',
-    marginTop: '50px',
+    marginTop: '70px',
+    minHeight: '380px', // Agrandissement global de la carte
   },
   headerBackground: {
     width: '100%',
-    height: '80px',
+    height: '100px', // Bandeau un peu plus large
     backgroundColor: 'rgba(212, 175, 55, 0.1)',
     position: 'relative',
     display: 'flex',
@@ -79,18 +78,19 @@ const styles = {
   },
   imageWrapper: {
     position: 'absolute',
-    top: '-50px',
-    width: '100px',
-    height: '100px',
+    top: '-70px', // On remonte le cercle pour l'adapter a sa nouvelle taille
+    width: '140px', // Cercle beaucoup plus grand (avant 100px)
+    height: '140px',
     borderRadius: BORDERS.radius.circle,
-    padding: '4px',
+    padding: '6px',
     backgroundColor: COLORS.background,
-    ...SHADOWS.medium,
+    ...SHADOWS.strong,
   },
   image: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+    objectPosition: 'center top', // Astuce : on se concentre sur le haut de l'image (le visage)
     borderRadius: BORDERS.radius.circle,
   },
   placeholderImage: {
@@ -103,13 +103,13 @@ const styles = {
     borderRadius: BORDERS.radius.circle,
   },
   placeholderText: {
-    fontSize: '40px',
+    fontSize: '50px',
     color: COLORS.primary,
     fontWeight: 'bold',
   },
   infoContainer: {
     padding: SPACING.xl,
-    paddingTop: '60px',
+    paddingTop: '80px', // On pousse le texte vers le bas pour ne pas toucher la grande image
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

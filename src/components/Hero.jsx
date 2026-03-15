@@ -1,13 +1,15 @@
 // src/components/Hero.jsx
 import axios from 'axios';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ChevronDown, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useToast } from '../context/ToastContext';
-import { BORDERS, COLORS, FONTS, GLASS, SPACING } from '../theme/theme';
+import { COLORS, FONTS } from '../theme/theme';
 import AppScreenshots from './AppScreenshots';
 import DownloadCard from './DownloadCard';
+import DownloadInfoModal from './DownloadInfoModal';
+import TypingTitle from './TypingTitle';
 
 import logoImg from '../assets/logo.png';
 
@@ -15,41 +17,13 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   const socket = useSocket();
   const { showToast } = useToast();
   
-  // On initialise à null pour que le composant enfant sache qu'on charge
   const [stats, setStats] = useState({ androidClicks: null, iosClicks: null });
   const [isLogoLoaded, setIsLogoLoaded] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingPlatform, setPendingPlatform] = useState(null);
-  
-  const [displayedTitle, setDisplayedTitle] = useState("");
-  const [isTyping, setIsTyping] = useState(true);
 
-  const fullTitle = "L'ELITE DU TRANSPORT.";
-
-  useEffect(() => {
-    let timeoutId;
-    let currentIndex = 0;
-
-    const typeCharacter = () => {
-      setIsTyping(true);
-      if (currentIndex < fullTitle.length) {
-        setDisplayedTitle(fullTitle.substring(0, currentIndex + 1));
-        currentIndex++;
-        timeoutId = setTimeout(typeCharacter, 100);
-      } else {
-        setIsTyping(false);
-        timeoutId = setTimeout(() => {
-          currentIndex = 0;
-          setDisplayedTitle("");
-          typeCharacter();
-        }, 30000);
-      }
-    };
-
-    typeCharacter();
-    return () => clearTimeout(timeoutId);
-  }, []);
+  const downloadSectionRef = useRef(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -63,7 +37,6 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
         }
       } catch (err) {
         console.error("Erreur de recuperation des statistiques", err);
-        // Si erreur, on met 0 pour arreter le chargement infini
         setStats({ androidClicks: 0, iosClicks: 0 });
       }
     };
@@ -100,6 +73,12 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
       setTimeout(() => onAndroidClick(), 300);
     } else if (pendingPlatform === 'ios') {
       setTimeout(() => onIosClick(), 300);
+    }
+  };
+
+  const scrollToDownloads = () => {
+    if (downloadSectionRef.current) {
+      downloadSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
 
@@ -164,29 +143,27 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
           />
         </motion.div>
 
-        <motion.h1 variants={itemVariants} style={styles.title}>
-          {displayedTitle}
-          {isTyping && (
-            <motion.span
-              animate={{ opacity: [1, 0] }}
-              transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut", repeatType: "reverse" }}
-              style={{ color: COLORS.primary, marginLeft: '4px' }}
-            >
-              |
-            </motion.span>
-          )}
-        </motion.h1>
+        <TypingTitle fullTitle="L'ELITE DU TRANSPORT." variants={itemVariants} />
         
         <motion.p variants={itemVariants} style={styles.subtitle}>
           Telechargez l'application officielle Yely.
         </motion.p>
 
-        {/* Integration du Carousel ici */}
+        <motion.div 
+          style={styles.scrollIndicator}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          onClick={scrollToDownloads}
+        >
+          <span style={styles.scrollText}>Decouvrir plus</span>
+          <ChevronDown color={COLORS.primary} size={24} />
+        </motion.div>
+
         <motion.div variants={itemVariants} style={{ width: '100%' }}>
           <AppScreenshots />
         </motion.div>
 
-        <motion.div variants={itemVariants} style={styles.buttonContainer}>
+        <motion.div variants={itemVariants} style={styles.buttonContainer} ref={downloadSectionRef}>
           <DownloadCard 
             platform="android"
             clicks={stats.androidClicks}
@@ -200,66 +177,13 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
             pulseVariants={pulseIosVariants}
           />
         </motion.div>
-
-        {/* Indicateur pour scroller vers le bas */}
-        <motion.div 
-          style={styles.scrollIndicator}
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-        >
-          <span style={styles.scrollText}>Decouvrir plus</span>
-          <ChevronDown color={COLORS.primary} size={24} />
-        </motion.div>
-
       </motion.div>
 
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div 
-            style={styles.modalOverlay}
-            initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            animate={{ opacity: 1, backdropFilter: 'blur(10px)' }}
-            exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-          >
-            <motion.div 
-              style={styles.modalContent}
-              initial={{ scale: 0.8, y: 50, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.8, y: 50, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 250, damping: 20 }}
-            >
-              <button style={styles.modalCloseBtn} onClick={() => setIsModalOpen(false)}>
-                <X size={24} color={COLORS.textPrimary} />
-              </button>
-              
-              <div style={styles.modalIconBox}>
-                <AlertCircle size={36} color={COLORS.primary} />
-              </div>
-              
-              <h2 style={styles.modalTitle}>Information Importante</h2>
-              
-              <div style={styles.modalTextContainer}>
-                <p style={styles.modalText}>
-                  <strong style={{ color: COLORS.primary }}>Pour les Clients :</strong> L'application fonctionne parfaitement sur Android et iPhone (iOS).
-                </p>
-                <div style={styles.modalDivider} />
-                <p style={styles.modalText}>
-                  <strong style={{ color: COLORS.textPrimary }}>Pour les Chauffeurs :</strong> Afin de garantir une precision GPS absolue en arriere-plan, l'application Chauffeur est <strong style={{color: COLORS.danger}}>temporairement reservee aux telephones Android</strong>.
-                </p>
-              </div>
-
-              <motion.button 
-                style={styles.modalConfirmBtn} 
-                onClick={confirmDownload}
-                whileHover={{ scale: 1.02, backgroundColor: COLORS.primaryLight }}
-                whileTap={{ scale: 0.98 }}
-              >
-                J'ai compris, continuer
-              </motion.button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DownloadInfoModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={confirmDownload}
+      />
     </>
   );
 };
@@ -274,8 +198,7 @@ const styles = {
     padding: '40px 20px',
     textAlign: 'center',
     width: '100%',
-    boxSizing: 'border-box',
-    position: 'relative' // Ajoute pour l'indicateur de scroll
+    boxSizing: 'border-box'
   },
   logoWrapper: { 
     marginBottom: '2vh', 
@@ -300,17 +223,22 @@ const styles = {
   },
   logoImage: { width: '100%', height: '100%', objectFit: 'cover', position: 'relative', zIndex: 2 },
   
-  title: { 
-    fontSize: FONTS.sizes.h2, 
-    color: COLORS.textPrimary, 
-    marginBottom: '10px', 
-    fontWeight: '800',
-    minHeight: '36px',
+  subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '10px' }, 
+
+  scrollIndicator: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
+    cursor: 'pointer',
+    margin: '10px 0 25px 0', 
+    opacity: 0.85
   },
-  subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '20px' }, 
+  scrollText: {
+    fontSize: '12px',
+    color: COLORS.primary, 
+    fontWeight: 'bold',
+    marginBottom: '5px'
+  },
 
   buttonContainer: { 
     display: 'flex', 
@@ -321,32 +249,8 @@ const styles = {
     width: '100%', 
     maxWidth: '450px',
     marginTop: '20px',
-    marginBottom: '80px' // Laisse de l'espace pour l'indicateur
-  }, 
-
-  scrollIndicator: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: '20px',
-    opacity: 0.7
-  },
-  scrollText: {
-    fontSize: '12px',
-    color: COLORS.textSecondary,
-    marginBottom: '5px'
-  },
-  
-  modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: SPACING.md },
-  modalContent: { ...GLASS.modal, width: '100%', maxWidth: '380px', maxHeight: '90vh', overflowY: 'auto', borderRadius: BORDERS.radius.xl, padding: SPACING.lg, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', border: `1px solid ${COLORS.border}`, boxShadow: `0 20px 40px rgba(0,0,0,0.5)` },
-  modalCloseBtn: { position: 'absolute', top: SPACING.md, right: SPACING.md, background: 'none', border: 'none', cursor: 'pointer', padding: '8px' },
-  modalIconBox: { width: '60px', height: '60px', borderRadius: '30px', backgroundColor: 'rgba(212, 175, 55, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: SPACING.md },
-  modalTitle: { fontSize: FONTS.sizes.h3, color: COLORS.textPrimary, fontWeight: 'bold', marginBottom: SPACING.md, textAlign: 'center' },
-  modalTextContainer: { backgroundColor: 'rgba(0,0,0,0.2)', padding: SPACING.md, borderRadius: BORDERS.radius.lg, marginBottom: SPACING.lg, width: '100%' },
-  modalText: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, lineHeight: 1.5, textAlign: 'left' },
-  modalDivider: { height: '1px', backgroundColor: COLORS.border, margin: `${SPACING.sm}px 0` },
-  modalConfirmBtn: { backgroundColor: COLORS.primary, color: '#000', border: 'none', borderRadius: BORDERS.radius.pill, height: '45px', width: '100%', fontSize: FONTS.sizes.body, fontWeight: 'bold', cursor: 'pointer' }
+    marginBottom: '40px'
+  }
 };
 
-export default Hero;
+export default Hero;  
