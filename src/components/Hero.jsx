@@ -55,8 +55,14 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   }, [socket]);
 
   const handleInterceptClick = (platform) => {
-    setPendingPlatform(platform);
-    setIsModalOpen(true);
+    if (platform === 'ios') {
+      setStats(prev => ({ ...prev, iosClicks: (prev.iosClicks || 0) + 1 }));
+      showToast("Ouverture de l'application...", "info");
+      onIosClick();
+    } else {
+      setPendingPlatform(platform);
+      setIsModalOpen(true);
+    }
   };
 
   const confirmDownload = () => {
@@ -64,16 +70,11 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
     
     setStats(prev => ({
       ...prev,
-      androidClicks: pendingPlatform === 'android' ? (prev.androidClicks || 0) + 1 : prev.androidClicks,
-      iosClicks: pendingPlatform === 'ios' ? (prev.iosClicks || 0) + 1 : prev.iosClicks
+      androidClicks: (prev.androidClicks || 0) + 1
     }));
 
-    if (pendingPlatform === 'android') {
-      showToast("Preparation du telechargement Android...", "info");
-      setTimeout(() => onAndroidClick(), 300);
-    } else if (pendingPlatform === 'ios') {
-      setTimeout(() => onIosClick(), 300);
-    }
+    showToast("Le telechargement a demarre", "success");
+    setTimeout(() => onAndroidClick(), 300);
   };
 
   const scrollToDownloads = () => {
@@ -253,4 +254,4 @@ const styles = {
   }
 };
 
-export default Hero;  
+export default Hero;
