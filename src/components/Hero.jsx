@@ -23,7 +23,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingPlatform, setPendingPlatform] = useState(null);
 
-  const downloadSectionRef = useRef(null);
+  const screenshotsRef = useRef(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -77,9 +77,9 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
     setTimeout(() => onAndroidClick(), 300);
   };
 
-  const scrollToDownloads = () => {
-    if (downloadSectionRef.current) {
-      downloadSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const scrollToScreenshots = () => {
+    if (screenshotsRef.current) {
+      screenshotsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -150,21 +150,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
           Telechargez l'application officielle Yely.
         </motion.p>
 
-        <motion.div 
-          style={styles.scrollIndicator}
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-          onClick={scrollToDownloads}
-        >
-          <span style={styles.scrollText}>Decouvrir plus</span>
-          <ChevronDown color={COLORS.primary} size={24} />
-        </motion.div>
-
-        <motion.div variants={itemVariants} style={{ width: '100%' }}>
-          <AppScreenshots />
-        </motion.div>
-
-        <motion.div variants={itemVariants} style={styles.buttonContainer} ref={downloadSectionRef}>
+        <motion.div variants={itemVariants} style={styles.buttonContainer}>
           <DownloadCard 
             platform="android"
             clicks={stats.androidClicks}
@@ -178,6 +164,21 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
             pulseVariants={pulseIosVariants}
           />
         </motion.div>
+
+        <motion.div 
+          style={styles.scrollIndicator}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          onClick={scrollToScreenshots}
+        >
+          <span style={styles.scrollText}>Decouvrir l'application</span>
+          <ChevronDown color={COLORS.primary} size={24} />
+        </motion.div>
+
+        <motion.div variants={itemVariants} style={{ width: '100%' }} ref={screenshotsRef}>
+          <AppScreenshots />
+        </motion.div>
+
       </motion.div>
 
       <DownloadInfoModal 
@@ -226,21 +227,6 @@ const styles = {
   
   subtitle: { fontSize: FONTS.sizes.bodySmall, color: COLORS.textSecondary, marginBottom: '10px' }, 
 
-  scrollIndicator: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    cursor: 'pointer',
-    margin: '10px 0 25px 0', 
-    opacity: 0.85
-  },
-  scrollText: {
-    fontSize: '12px',
-    color: COLORS.primary, 
-    fontWeight: 'bold',
-    marginBottom: '5px'
-  },
-
   buttonContainer: { 
     display: 'flex', 
     flexDirection: 'row', 
@@ -250,7 +236,22 @@ const styles = {
     width: '100%', 
     maxWidth: '450px',
     marginTop: '20px',
-    marginBottom: '40px'
+    marginBottom: '20px'
+  },
+
+  scrollIndicator: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    cursor: 'pointer',
+    margin: '10px 0 30px 0', 
+    opacity: 0.85
+  },
+  scrollText: {
+    fontSize: '12px',
+    color: COLORS.primary, 
+    fontWeight: 'bold',
+    marginBottom: '5px'
   }
 };
 
