@@ -1,7 +1,7 @@
 // src/components/Hero.jsx
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { CheckCircle, ChevronDown, ShieldCheck } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import { useToast } from '../context/ToastContext';
@@ -12,6 +12,13 @@ import DownloadInfoModal from './DownloadInfoModal';
 import TypingTitle from './TypingTitle';
 
 import logoImg from '../assets/logo.png';
+
+// Composant SVG pour l'icône Apple
+const AppleIcon = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 384 512" fill={color} xmlns="http://www.w3.org/2000/svg">
+    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+  </svg>
+);
 
 const Hero = ({ onAndroidClick, onIosClick }) => {
   const socket = useSocket();
@@ -165,15 +172,19 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
           />
         </motion.div>
 
-        {/* NOUVEAU : BADGE DE CONFIANCE */}
+        {/* BADGE DE CONFIANCE AVEC ICÔNE REACT */}
         <motion.div variants={itemVariants} style={styles.trustBadge}>
-          <span style={styles.trustIcon}>✅</span>
+          <CheckCircle size={16} color="#2ecc71" />
           <span style={styles.trustText}>Vérifié par l'équipe Yély : Garanti sans virus et sécurisé.</span>
         </motion.div>
 
-        {/* NOUVEAU : GUIDE DE SÉCURITÉ ET INSTALLATION */}
+        {/* GUIDE DE SÉCURITÉ AVEC ICÔNES REACT */}
         <motion.div variants={itemVariants} style={styles.securityBox}>
-          <h3 style={styles.securityTitle}>🛡️ Installation 100% Sécurisée</h3>
+          <div style={styles.securityHeader}>
+            <ShieldCheck size={22} color={COLORS.primary} style={{ marginRight: '8px' }} />
+            <h3 style={styles.securityTitle}>Installation 100% Sécurisée</h3>
+          </div>
+          
           <div style={styles.securityContent}>
             <p style={styles.securityText}>
               <strong>Pourquoi un message d'alerte ?</strong><br/>
@@ -185,10 +196,16 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
               2. Ouvrez le fichier. Si Google bloque : cliquez sur <b>"Plus de détails"</b>.<br/>
               3. Cliquez ensuite sur <b>"Installer quand même"</b>.
             </p>
-            <p style={styles.securityTextiOS}>
-              🍎 <strong>Utilisateur iPhone ?</strong><br/>
-              Cliquez sur l'icône <b>Partager</b> (le carré avec la flèche en bas) puis sur <b>"Sur l'écran d'accueil"</b> pour installer Yély.
-            </p>
+            
+            <div style={styles.iosGuideWrapper}>
+              <div style={styles.iosHeader}>
+                <AppleIcon size={16} color={COLORS.textPrimary} />
+                <strong style={{ marginLeft: '6px' }}>Utilisateur iPhone ?</strong>
+              </div>
+              <p style={styles.securityTextiOS}>
+                Cliquez sur l'icône <b>Partager</b> (le carré avec la flèche en bas) puis sur <b>"Sur l'écran d'accueil"</b> pour installer Yély.
+              </p>
+            </div>
           </div>
         </motion.div>
 
@@ -266,7 +283,6 @@ const styles = {
     marginBottom: '15px'
   },
 
-  // STYLES DU BADGE DE CONFIANCE
   trustBadge: {
     display: 'flex',
     alignItems: 'center',
@@ -281,12 +297,11 @@ const styles = {
     maxWidth: '450px',
   },
   trustText: {
-    color: '#2ecc71', // Vert sécurité
+    color: '#2ecc71',
     fontSize: '11px',
     fontWeight: 'bold',
   },
 
-  // STYLES DU GUIDE DE SÉCURITÉ
   securityBox: {
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     border: `1px solid ${COLORS.border}`,
@@ -297,12 +312,16 @@ const styles = {
     marginBottom: '30px',
     textAlign: 'left',
   },
+  securityHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '12px',
+  },
   securityTitle: {
     color: COLORS.primary,
     fontSize: FONTS.sizes.body,
-    marginBottom: '12px',
     fontWeight: 'bold',
-    marginTop: 0,
+    margin: 0,
   },
   securityContent: {
     display: 'flex',
@@ -315,13 +334,22 @@ const styles = {
     lineHeight: '1.5',
     margin: 0,
   },
-  securityTextiOS: {
+  iosGuideWrapper: {
+    paddingTop: '12px',
+    borderTop: `1px solid ${COLORS.border}`,
+    marginTop: '4px',
+  },
+  iosHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '4px',
     color: COLORS.textPrimary,
+  },
+  securityTextiOS: {
+    color: COLORS.textSecondary,
     fontSize: '13px',
     lineHeight: '1.5',
     margin: 0,
-    paddingTop: '12px',
-    borderTop: `1px solid ${COLORS.border}`,
   },
 
   scrollIndicator: {
