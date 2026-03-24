@@ -165,6 +165,33 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
           />
         </motion.div>
 
+        {/* NOUVEAU : BADGE DE CONFIANCE */}
+        <motion.div variants={itemVariants} style={styles.trustBadge}>
+          <span style={styles.trustIcon}>✅</span>
+          <span style={styles.trustText}>Vérifié par l'équipe Yély : Garanti sans virus et sécurisé.</span>
+        </motion.div>
+
+        {/* NOUVEAU : GUIDE DE SÉCURITÉ ET INSTALLATION */}
+        <motion.div variants={itemVariants} style={styles.securityBox}>
+          <h3 style={styles.securityTitle}>🛡️ Installation 100% Sécurisée</h3>
+          <div style={styles.securityContent}>
+            <p style={styles.securityText}>
+              <strong>Pourquoi un message d'alerte ?</strong><br/>
+              Yély est une application locale de Maféré. N'étant pas encore sur le "Play Store" (pour éviter les taxes et rester gratuit pour vous), Google peut afficher un avertissement. <span style={{color: COLORS.primary, fontWeight: 'bold'}}>C'est normal et sans danger.</span>
+            </p>
+            <p style={styles.securityText}>
+              <strong>Comment faire sur Android ?</strong><br/>
+              1. Cliquez sur <b>Télécharger pour Android</b>.<br/>
+              2. Ouvrez le fichier. Si Google bloque : cliquez sur <b>"Plus de détails"</b>.<br/>
+              3. Cliquez ensuite sur <b>"Installer quand même"</b>.
+            </p>
+            <p style={styles.securityTextiOS}>
+              🍎 <strong>Utilisateur iPhone ?</strong><br/>
+              Cliquez sur l'icône <b>Partager</b> (le carré avec la flèche en bas) puis sur <b>"Sur l'écran d'accueil"</b> pour installer Yély.
+            </p>
+          </div>
+        </motion.div>
+
         <motion.div 
           style={styles.scrollIndicator}
           animate={{ y: [0, 8, 0] }}
@@ -236,7 +263,65 @@ const styles = {
     width: '100%', 
     maxWidth: '450px',
     marginTop: '20px',
-    marginBottom: '20px'
+    marginBottom: '15px'
+  },
+
+  // STYLES DU BADGE DE CONFIANCE
+  trustBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '8px 16px',
+    backgroundColor: 'rgba(46, 204, 113, 0.08)',
+    border: '1px solid rgba(46, 204, 113, 0.3)',
+    borderRadius: '20px',
+    marginBottom: '25px',
+    width: '100%',
+    maxWidth: '450px',
+  },
+  trustText: {
+    color: '#2ecc71', // Vert sécurité
+    fontSize: '11px',
+    fontWeight: 'bold',
+  },
+
+  // STYLES DU GUIDE DE SÉCURITÉ
+  securityBox: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: '16px',
+    padding: '20px',
+    maxWidth: '450px',
+    width: '100%',
+    marginBottom: '30px',
+    textAlign: 'left',
+  },
+  securityTitle: {
+    color: COLORS.primary,
+    fontSize: FONTS.sizes.body,
+    marginBottom: '12px',
+    fontWeight: 'bold',
+    marginTop: 0,
+  },
+  securityContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  securityText: {
+    color: COLORS.textSecondary,
+    fontSize: '13px',
+    lineHeight: '1.5',
+    margin: 0,
+  },
+  securityTextiOS: {
+    color: COLORS.textPrimary,
+    fontSize: '13px',
+    lineHeight: '1.5',
+    margin: 0,
+    paddingTop: '12px',
+    borderTop: `1px solid ${COLORS.border}`,
   },
 
   scrollIndicator: {
