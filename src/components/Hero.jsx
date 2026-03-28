@@ -151,7 +151,7 @@ const Hero = ({ onAndroidClick, onIosClick }) => {
           />
         </motion.div>
 
-        <TypingTitle fullTitle="L'ELITE DU TRANSPORT." variants={itemVariants} />
+        <TypingTitle fullTitle="Avec Yély, ça va vite!" variants={itemVariants} />
         
         <motion.p variants={itemVariants} style={styles.subtitle}>
           Telechargez l'application officielle Yely.
